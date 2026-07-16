@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Code Structure Visualizer</title>
+    <style>
+        :root {
+            /* Vibrant Dark Theme */
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            /* Accent Colors */
+            --neon-blue: #38bdf8;
+            --neon-green: #4ade80;
+            --neon-purple: #c084fc;
+            --neon-cyan: #22d3ee;
+            --neon-orange: #fb923c;
+            --neon-red: #f87171;
+            
+            /* Syntax Colors */
+            --c-comment: #4ade80;
+            --c-keyword: #c084fc;
+            --c-string: #f472b6;
+            --c-class: #22d3ee;
+            --c-method: #fde047;
+            --c-plain: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Animated Background Elements */
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.3;
+            z-index: -1;
+            animation: float 12s infinite ease-in-out alternate;
+        }
+        .orb-1 { width: 400px; height: 400px; background: var(--neon-blue); top: -100px; left: -100px; }
+        .orb-2 { width: 500px; height: 500px; background: var(--neon-purple); bottom: -150px; right: -100px; animation-delay: -6s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 60px) scale(1.1); }
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(12px);
+        }
+
+        /* --- LEFT PANEL: CODE VIEWER --- */
+        .left-panel {
+            flex: 2;
+            padding: 40px;
+            overflow-y: auto;
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .code-editor {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 18px;
+            line-height: 1.6;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            flex-grow: 1;
+        }
+
+        .code-section {
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 4px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            white-space: pre-wrap;
+            position: relative;
+        }
+
+        .code-section:hover {
+            background: var(--glass-bg);
+            transform: translateX(8px);
+        }
+
+        /* Syntax Color Classes */
+        .comment { color: var(--c-comment); font-style: italic; }
+        .keyword { color: var(--c-keyword); font-weight: bold; }
+        .string { color: var(--c-string); }
+        .cls { color: var(--c-class); font-weight: 600; }
+        .mth { color: var(--c-method); }
+        .plain { color: var(--c-plain); }
+
+        /* Animated Active States */
+        .code-section.active {
+            transform: scale(1.02) translateX(15px);
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .active[data-sec="doc"] { border-left: 4px solid var(--neon-green); box-shadow: 0 0 20px rgba(74, 222, 128, 0.2); }
+        .active[data-sec="package"] { border-left: 4px solid var(--neon-purple); box-shadow: 0 0 20px rgba(192, 132, 252, 0.2); }
+        .active[data-sec="import"] { border-left: 4px solid var(--neon-cyan); box-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
+        .active[data-sec="interface"] { border-left: 4px solid var(--neon-orange); box-shadow: 0 0 20px rgba(251, 146, 60, 0.2); }
+        .active[data-sec="class"] { border-left: 4px solid var(--neon-blue); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
+        .active[data-sec="main"] { border-left: 4px solid var(--neon-red); box-shadow: 0 0 20px rgba(248, 113, 113, 0.2); }
+
+        /* --- RIGHT PANEL: CONTROLS --- */
+        .right-panel {
+            flex: 1;
+            min-width: 420px;
+            padding: 40px 35px;
+            background: rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        .instructions {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.5;
+            padding: 15px;
+            background: var(--glass-bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--neon-blue);
+        }
+
+        .btn {
+            background: var(--glass-bg);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            padding: 16px 20px;
+            font-size: 16px;
+            text-align: left;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before { left: 100%; }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .btn::after { content: '✨'; opacity: 0; transition: opacity 0.3s; font-size: 18px; }
+        .btn:hover::after { opacity: 1; }
+
+        /* Button hover colored borders */
+        .btn[data-sec="doc"]:hover { border-bottom: 3px solid var(--neon-green); }
+        .btn[data-sec="package"]:hover { border-bottom: 3px solid var(--neon-purple); }
+        .btn[data-sec="import"]:hover { border-bottom: 3px solid var(--neon-cyan); }
+        .btn[data-sec="interface"]:hover { border-bottom: 3px solid var(--neon-orange); }
+        .btn[data-sec="class"]:hover { border-bottom: 3px solid var(--neon-blue); }
+        .btn[data-sec="main"]:hover { border-bottom: 3px solid var(--neon-red); }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); 
+            backdrop-filter: blur(10px);
+            z-index: 100; 
+            justify-content: center; 
+            align-items: center;
+            opacity: 0; 
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-overlay.show { display: flex; opacity: 1; }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            padding: 40px; 
+            border-radius: 16px; 
+            width: 90%; 
+            max-width: 600px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7), inset 0 0 0 1px var(--glass-border); 
+            position: relative; 
+            transform: translateY(50px) scale(0.9); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.show .modal-content { transform: translateY(0) scale(1); }
+
+        .close-btn {
+            position: absolute; 
+            top: 20px; right: 25px; 
+            font-size: 32px; 
+            cursor: pointer; 
+            color: var(--text-muted); 
+            border: none; 
+            background: transparent;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .close-btn:hover { color: #fff; transform: rotate(90deg); }
+
+        .modal-title {
+            font-size: 26px; 
+            color: #fff; 
+            margin-bottom: 20px; 
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .modal-body {
+            font-size: 16px; 
+            line-height: 1.8; 
+            color: #cbd5e1; 
+        }
+
+        .modal-body code {
+            background: rgba(0,0,0,0.4);
+            padding: 3px 6px;
+            border-radius: 4px;
+            color: var(--neon-cyan);
+            font-family: 'Consolas', monospace;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-body h4 { margin-top: 15px; color: var(--neon-blue); }
+    </style>
+</head>
+<body>
+
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <div class="container">
+        <div class="left-panel">
+            <h2>Application.java Structure</h2>
+            
+            <div class="code-editor">
+<div class="code-section" data-sec="doc"><span class="comment">// This is a single line comment</span></div>
+
+<div class="code-section" data-sec="package"><span class="keyword">package</span> <span class="plain">com.codewithkomati.profile;</span></div>
+
+<div class="code-section" data-sec="import"><span class="keyword">import</span> <span class="plain">java.util.Scanner;</span>
+<span class="keyword">import</span> <span class="plain">java.util.List;</span></div>
+
+<div class="code-section" data-sec="interface"><span class="keyword">public interface</span> <span class="cls">Processable</span> <span class="plain">{</span>
+    <span class="comment">// Abstract methods would go here</span>
+<span class="plain">}</span></div>
+
+<div class="code-section" data-sec="class"><span class="keyword">public class</span> <span class="cls">Application</span> <span class="keyword"> </span> <span class="cls"> </span> <span class="plain">{</span></div>
+
+<div class="code-section" data-sec="main" style="padding-left: 40px;">    <span class="keyword">public static void</span> <span class="mth">main</span><span class="plain">(</span><span class="cls">String</span><span class="plain">[] args) {</span>
+        <span class="cls">System</span><span class="plain">.out.</span><span class="mth">println</span><span class="plain">(</span><span class="string">"Hello, Code with Komati!"</span><span class="plain">);</span>
+    <span class="plain">}</span></div>
+
+<div class="code-section" data-sec="class"><span class="plain">}</span></div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <h2>Step-by-Step Guide</h2>
+            <div class="instructions">
+                <strong>🖱️ Single-click</strong> a button to highlight the code on the left.<br>
+                <strong>🖱️🖱️ Double-click</strong> a button to read detailed explanations.
+            </div>
+
+            <button class="btn" data-sec="doc">1. Documentation Section (Suggested)</button>
+            <button class="btn" data-sec="package">2. Package Section (Optional)</button>
+            <button class="btn" data-sec="import">3. Import Section (Optional)</button>
+            <button class="btn" data-sec="interface">4. Interface Section (Optional)</button>
+            <button class="btn" data-sec="class">5. Class Definition (Optional)</button>
+            <button class="btn" data-sec="main">6. Main Method Class (Compulsory)</button>
+        </div>
+    </div>
+
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div id="modalTitle" class="modal-title">Title</div>
+            <div id="modalBody" class="modal-body">Content</div>
+        </div>
+    </div>
+
+    <script>
+        // Explanation Content for Modals
+        const explanations = {
+            doc: {
+                title: "📝 1. Documentation Section (Suggested)",
+                body: "Java provides three main types of comments to document your code:<br><br><h4>Single-Line Comments <code>//</code></h4>Used for quick, brief notes on a single line. The compiler ignores everything after the slashes.<br><br><h4>Multi-Line Comments <code>/* ... */</code></h4>Ideal for longer descriptions, block comments, or defining the Program Name, Author, and Date at the top of a file.<br><br><h4>Documentation Comments <code>/** ... */</code></h4>Special 'Javadoc' comments used right before classes or methods. They generate official HTML documentation and allow tags like <code>@author</code> or <code>@param</code>."
+            },
+            package: {
+                title: "📦 2. Package Section (Optional)",
+                body: "A package, such as <code>com.codewithkomati.profile</code>, acts like a folder directory for your Java classes. <br><br><strong>Why use it?</strong><br>• It organizes large applications into logical modules.<br>• It prevents naming conflicts (two classes named 'Application' can exist safely if they are in different packages).<br>• It provides access protection boundaries.<br><br><em>Note: If included, the package declaration MUST be the first line of code.</em>"
+            },
+            import: {
+                title: "🔗 3. Import Section (Optional)",
+                body: "By default, Java only automatically loads the <code>java.lang</code> package (which contains basic classes like <code>String</code> and <code>System</code>).<br><br>If you need to use utilities from other packages—like <code>java.util.Scanner</code> for user input or <code>java.util.List</code> for data structures—you must explicitly <strong>import</strong> them before the class definition."
+            },
+            interface: {
+                title: "📜 4. Interface Section (Optional)",
+                body: "An <code>interface</code> is a completely abstract class used to group related methods with empty bodies. It acts as a contract.<br><br>Any class that chooses to <code>implement</code> an interface is forced to provide the actual coding logic for those methods. It's a cornerstone of achieving abstraction and multiple inheritance in Java."
+            },
+            class: {
+                title: "🏗️ 5. Class Definition (Optional but standard)",
+                body: "A <code>class</code> is the core blueprint from which individual objects are created. It contains variables (state) and methods (behavior).<br><br><strong>Important Rule:</strong> If the class is marked <code>public</code>, the name of the class (<code>Application</code>) must exactly match the filename (<code>Application.java</code>)."
+            },
+            main: {
+                title: "🚀 6. Main Method (Compulsory)",
+                body: "<code>public static void main(String[] args)</code><br><br>Every standalone Java application must have at least one class containing a main method. This is the absolute starting point (entry point) of the program.<br><br>When you execute a Java program, the Java Virtual Machine (JVM) actively looks for this exact method signature to begin running your code."
+            }
+        };
+
+        const sections = document.querySelectorAll('.code-section[data-sec]');
+        const buttons = document.querySelectorAll('.btn');
+        const modal = document.getElementById('infoModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        let clickTimer = null;
+        const delay = 250; 
+
+        function highlightSection(secId) {
+            sections.forEach(sec => sec.classList.remove('active'));
+            const targets = document.querySelectorAll(`.code-section[data-sec="${secId}"]`);
+            targets.forEach(target => target.classList.add('active'));
+            
+            if (targets.length > 0) {
+                targets[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function showModal(secId) {
+            const data = explanations[secId];
+            if (data) {
+                modalTitle.innerHTML = data.title;
+                modalBody.innerHTML = data.body;
+                modal.classList.add('show');
+            }
+        }
+
+        function closeModal() {
+            modal.classList.remove('show');
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Map events to the buttons
+        buttons.forEach(btn => {
+            const secId = btn.getAttribute('data-sec');
+            
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearTimeout(clickTimer);
+                clickTimer = setTimeout(() => highlightSection(secId), delay);
+            });
+            
+            btn.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                clearTimeout(clickTimer); 
+                highlightSection(secId);  
+                showModal(secId);         
+            });
+        });
+
+        // Map events to the code sections themselves
+        sections.forEach(sec => {
+            sec.addEventListener('click', () => {
+                const secId = sec.getAttribute('data-sec');
+                if(secId) highlightSection(secId);
+            });
+            
+            sec.addEventListener('dblclick', () => {
+                const secId = sec.getAttribute('data-sec');
+                if(secId) showModal(secId);
+            });
+        });
+    </script>
+</body>
+</html>
