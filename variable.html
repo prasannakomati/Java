@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Variables Explained</title>
+
+<style>
+:root{
+    --primary:#2563eb;
+    --secondary:#0ea5e9;
+    --bg:#f8fafc;
+    --card:#ffffff;
+    --text:#1e293b;
+    --success:#22c55e;
+    --danger:#ef4444;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Segoe UI, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.7;
+}
+
+header{
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    text-align:center;
+    padding:60px 20px;
+}
+
+header h1{
+    font-size:3rem;
+}
+
+header p{
+    margin-top:10px;
+    font-size:1.1rem;
+}
+
+main{
+    max-width:1200px;
+    margin:auto;
+    padding:30px;
+}
+
+section{
+    background:var(--card);
+    margin-bottom:30px;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+    transition:.4s;
+}
+
+section:hover{
+    transform:translateY(-5px);
+}
+
+h2{
+    color:var(--primary);
+    margin-bottom:15px;
+}
+
+.code{
+    background:#0f172a;
+    color:#f8fafc;
+    padding:15px;
+    border-radius:10px;
+    overflow:auto;
+    margin-top:10px;
+    font-family:Consolas, monospace;
+}
+
+.highlight{
+    opacity:0;
+    transform:translateY(40px);
+    transition:all .8s ease;
+}
+
+.highlight.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* Variable Animation */
+
+.animation-area{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+    margin-top:20px;
+}
+
+.variable-box{
+    width:240px;
+    height:140px;
+    border:4px solid var(--primary);
+    border-radius:12px;
+    position:relative;
+    cursor:pointer;
+    transition:.4s;
+    background:white;
+}
+
+.variable-name{
+    position:absolute;
+    top:-18px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--primary);
+    color:white;
+    padding:5px 12px;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.value{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:2rem;
+    font-weight:bold;
+}
+
+.variable-box.active{
+    background:#dbeafe;
+    transform:scale(1.08);
+}
+
+button{
+    padding:12px 20px;
+    border:none;
+    background:var(--primary);
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:1rem;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.valid{
+    border-left:5px solid var(--success);
+}
+
+.invalid{
+    border-left:5px solid var(--danger);
+}
+
+ul{
+    margin-left:20px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:12px;
+    text-align:left;
+}
+
+th{
+    background:#e2e8f0;
+}
+
+footer{
+    text-align:center;
+    padding:30px;
+    color:#64748b;
+}
+
+/* Floating Value */
+
+.floating-value{
+    position:absolute;
+    font-weight:bold;
+    color:var(--success);
+    animation:drop 1s ease forwards;
+}
+
+@keyframes drop{
+    from{
+        top:-40px;
+        opacity:0;
+    }
+    to{
+        top:50%;
+        opacity:1;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Java Variables</h1>
+    <p>Learn Variables, Declaration, Initialization, Naming Rules & Examples</p>
+</header>
+
+<main>
+
+<section class="highlight">
+    <h2>1. What is a Variable?</h2>
+
+    <p>
+          <strong> A variable  is a name for a memory location used to store data</strong>
+         . OR Variables are containers for storing data values   .
+        The variable name helps us access the stored value later.
+    </p>
+
+    <div class="animation-area">
+
+        <div class="variable-box" id="box">
+            <div class="variable-name">age</div>
+            <div class="value" id="value">18</div>
+        </div>
+
+        <button onclick="changeValue()">Change Value</button>
+
+        <p>
+            Click the button to change the value stored inside the variable.
+        </p>
+    </div>
+
+</section>
+
+<section class="highlight">
+    <h2>2. Variable Declaration</h2>
+
+    <p>
+        Declaration means creating a variable by specifying its data type and name.
+        At this stage memory is reserved but no value is assigned.
+    </p>
+
+    <div class="code">
+int age;
+String name;
+double salary;
+    </div>
+
+    <p>
+        Here, the variables are declared but not initialized.
+    </p>
+</section>
+
+<section class="highlight">
+    <h2>3. Variable Initialization</h2>
+
+    <p>
+        Initialization means assigning a value to a variable.
+    </p>
+
+    <div class="code">
+age = 18;
+name = "Kumar";
+salary = 25000.50;
+    </div>
+
+    <p>
+        You can also declare and initialize together.
+    </p>
+
+    <div class="code">
+int age = 18;
+String name = "Kumar";
+    </div>
+
+</section>
+
+<section class="highlight">
+    <h2>4. Declaration vs Initialization</h2>
+
+    <table>
+        <tr>
+            <th>Declaration</th>
+            <th>Initialization</th>
+        </tr>
+        <tr>
+            <td>Creates a variable.</td>
+            <td>Assigns a value.</td>
+        </tr>
+        <tr>
+            <td>Specifies type and name.</td>
+            <td>Specifies actual data.</td>
+        </tr>
+        <tr>
+            <td>int age;</td>
+            <td>age = 18;</td>
+        </tr>
+    </table>
+</section>
+
+<section class="highlight">
+    <h2>5. Variable Naming Rules</h2>
+
+    <ul>
+        <li>Must begin with a letter, _ or $</li>
+        <li>Cannot begin with a number</li>
+        <li>Can contain letters, digits, _ and $</li>
+        <li>Cannot contain spaces</li>
+        <li>Cannot contain special symbols like @, #, %, -</li>
+        <li>Cannot use Java keywords</li>
+        <li>Java is case-sensitive</li>
+    </ul>
+</section>
+
+<section class="highlight">
+    <h2>6. Naming Conventions</h2>
+
+    <div class="grid">
+
+        <div>
+            <h3>camelCase (Recommended)</h3>
+
+            <div class="code">
+studentName
+totalMarks
+userAge
+            </div>
+        </div>
+
+        <div>
+            <h3>snake_case</h3>
+
+            <div class="code">
+student_name
+total_marks
+user_age
+            </div>
+        </div>
+
+    </div>
+
+    <p style="margin-top:20px;">
+        Java commonly uses <strong>camelCase</strong> for variable names.
+    </p>
+</section>
+
+<section class="highlight">
+    <h2>7. Length Considerations</h2>
+
+    <p>Choose meaningful names.</p>
+
+    <div class="grid">
+
+        <div class="valid">
+            <h3>Good</h3>
+
+            <div class="code">
+studentName
+accountBalance
+emailAddress
+            </div>
+        </div>
+
+        <div class="invalid">
+            <h3>Poor</h3>
+
+            <div class="code">
+a
+x
+abc
+tmp
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+<section class="highlight">
+    <h2>8. Valid Variable Names</h2>
+
+    <div class="code">
+age
+studentName
+userAge
+_count
+$price
+num1
+firstName
+isLoggedIn
+courseName
+totalMarks
+    </div>
+</section>
+
+<section class="highlight">
+    <h2>9. Invalid Variable Names</h2>
+
+    <div class="code">
+1age
+first name
+total-marks
+user@name
+#count
+class
+public
+static
+    </div>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Reason</th>
+        </tr>
+        <tr>
+            <td>1age</td>
+            <td>Starts with number</td>
+        </tr>
+        <tr>
+            <td>first name</td>
+            <td>Contains space</td>
+        </tr>
+        <tr>
+            <td>total-marks</td>
+            <td>Contains -</td>
+        </tr>
+        <tr>
+            <td>user@name</td>
+            <td>Contains @</td>
+        </tr>
+        <tr>
+            <td>class</td>
+            <td>Java keyword</td>
+        </tr>
+    </table>
+
+</section>
+
+<section class="highlight">
+    <h2>10. Complete Example</h2>
+
+    <div class="code">
+public class Main {
+
+    public static void main(String[] args) {
+
+        int age = 18;
+        String name = "Kumar";
+
+        System.out.println(name);
+        System.out.println(age);
+    }
+}
+    </div>
+
+</section>
+
+</main>
+
+<footer>
+    Java Variables Learning Page • Interactive Demo
+</footer>
+
+<script>
+
+// Variable animation
+
+const values = [18, 25, 40, 99, 120];
+let index = 0;
+
+function changeValue(){
+
+    index = (index + 1) % values.length;
+
+    const valueElement = document.getElementById("value");
+    const box = document.getElementById("box");
+
+    valueElement.textContent = values[index];
+
+    box.classList.add("active");
+
+    setTimeout(()=>{
+        box.classList.remove("active");
+    },500);
+}
+
+// Hover effect
+
+document.getElementById("box").addEventListener("mouseenter",()=>{
+    document.getElementById("box").style.borderColor="#22c55e";
+});
+
+document.getElementById("box").addEventListener("mouseleave",()=>{
+    document.getElementById("box").style.borderColor="#2563eb";
+});
+
+// Scroll reveal animation
+
+const sections = document.querySelectorAll(".highlight");
+
+const observer = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+        if(entry.isIntersecting){
+            entry.target.classList.add("show");
+        }
+    });
+},{
+    threshold:0.2
+});
+
+sections.forEach(section=>{
+    observer.observe(section);
+});
+
+</script>
+
+</body>
+</html>
