@@ -1,0 +1,182 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Binary Converter</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#0f172a,#1e293b,#0f172a);
+}
+
+.container{
+    width:500px;
+    padding:30px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    box-shadow:0 0 25px rgba(0,255,255,0.3);
+    animation:fadeIn 1s ease;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:25px;
+    color:#00ffff;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    font-size:18px;
+    border:none;
+    outline:none;
+    border-radius:10px;
+    margin-bottom:20px;
+}
+
+.buttons{
+    display:flex;
+    gap:10px;
+}
+
+button{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.convert{
+    background:#00e676;
+    color:black;
+    font-weight:bold;
+}
+
+.clear{
+    background:#ff5252;
+    color:white;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+.result{
+    margin-top:20px;
+    padding:20px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.1);
+    color:white;
+    text-align:center;
+    min-height:100px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.binary{
+    font-size:24px;
+    font-weight:bold;
+    color:#00ffff;
+    word-break:break-all;
+    letter-spacing:2px;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Java Binary Converter</h1>
+
+    <input
+        type="number"
+        id="decimal"
+        placeholder="Enter Any Integer">
+
+    <div class="buttons">
+
+        <button class="convert" onclick="convertBinary()">
+            Convert
+        </button>
+
+        <button class="clear" onclick="clearAll()">
+            Clear
+        </button>
+
+    </div>
+
+    <div class="result">
+
+        <div class="binary" id="binaryResult">
+            Enter a number and click Convert
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function convertBinary(){
+
+    let decimal =
+        document.getElementById("decimal").value;
+
+    if(decimal === ""){
+        alert("Please enter a number");
+        return;
+    }
+
+    decimal = parseInt(decimal);
+
+    let binary;
+
+    if(decimal >= 0){
+
+        // Positive number
+        binary = "0" + decimal.toString(2);
+
+    }else{
+
+        // Negative number
+        binary = "1" + Math.abs(decimal).toString(2);
+    }
+
+    document.getElementById("binaryResult")
+        .innerHTML = binary;
+}
+</script>
+
+</body>
+</html>
+ 

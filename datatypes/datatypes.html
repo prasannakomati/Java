@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Data Types Hierarchy</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f172a,#1e293b,#312e81);
+    padding:40px;
+    color:white;
+    overflow-x:hidden;
+}
+
+/* Animations */
+@keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-10px);}
+}
+
+@keyframes fadeUp{
+    from{opacity:0;transform:translateY(40px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+@keyframes glow{
+    0%{box-shadow:0 0 15px rgba(255,255,255,.2);}
+    50%{box-shadow:0 0 30px rgba(255,255,255,.5);}
+    100%{box-shadow:0 0 15px rgba(255,255,255,.2);}
+}
+
+@keyframes pulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.03);}
+}
+
+/* Tree */
+.tree{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/* Root */
+.root{
+    padding:18px 40px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#ff9966,#ff5e62);
+    font-size:32px;
+    font-weight:bold;
+    animation: float 4s infinite ease-in-out, glow 3s infinite;
+    box-shadow:0 0 25px rgba(255,94,98,.6);
+    text-align:center;
+}
+
+/* Main Layout */
+.level{
+    display:flex;
+    gap:60px;
+    margin-top:50px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+/* Main Cards */
+.main-box{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(15px);
+    border-radius:25px;
+    padding:25px;
+    min-width:550px;
+    animation:fadeUp 1s ease;
+    transition:.4s;
+}
+
+.main-box:hover{
+    transform:translateY(-8px);
+}
+
+/* Headings */
+.heading{
+    text-align:center;
+    padding:15px;
+    border-radius:15px;
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+.primitive{
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+}
+
+.nonprimitive{
+    background:linear-gradient(135deg,#3b82f6,#06b6d4);
+}
+
+/* Sub Level */
+.sub-level{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+/* Glass Cards */
+.light-box{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;
+    padding:18px;
+    backdrop-filter:blur(12px);
+    transition:.5s;
+}
+
+.light-box:hover{
+    transform:translateY(-8px) scale(1.02);
+    box-shadow:0 15px 30px rgba(0,0,0,.3);
+}
+
+/* Categories */
+.category{
+    text-align:center;
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:15px;
+    font-weight:bold;
+    animation:pulse 4s infinite;
+}
+
+.nonnumeric{background:linear-gradient(13deg,#ec4899,#f43f5e);}
+.numeric{background:linear-gradient(135deg,#8b5cf6,#7c3aed);}
+.integer{background:linear-gradient(135deg,#f59e0b,#facc15);color:black;}
+.floating{background:linear-gradient(135deg,#06b6d4,#22d3ee);color:black;}
+
+/* Items */
+.item{
+    text-align:center;
+    padding:10px;
+    margin:8px 0;
+    border-radius:10px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+    transition:.4s;
+}
+
+.item:hover{
+    transform:translateX(8px) scale(1.05);
+    background:rgba(255,255,255,.18);
+}
+
+/* Numeric sections */
+.numeric-sections{
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.inner-box{
+    flex:1;
+    min-width:150px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:15px;
+    padding:12px;
+}
+
+/* Non primitive grid */
+.non-items{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+/* Footer */
+.footer{
+    margin-top:40px;
+    text-align:center;
+    color:#cbd5e1;
+    font-size:18px;
+    animation:fadeUp 2s ease, pulse 5s infinite;
+}
+
+/* LINK STYLE */
+.link-btn{
+    text-decoration:none;
+    display:inline-block;
+    margin-top:10px;
+}
+
+/* ========================= */
+/* 📱 RESPONSIVE DESIGN */
+/* ========================= */
+
+/* Tablets */
+@media (max-width: 1024px){
+    body{
+        padding:25px;
+    }
+
+    .level{
+        gap:30px;
+    }
+
+    .main-box{
+        min-width:420px;
+        padding:20px;
+    }
+
+    .root{
+        font-size:26px;
+        padding:15px 25px;
+    }
+}
+
+/* Large Mobile */
+@media (max-width: 768px){
+    body{
+        padding:20px;
+    }
+
+    .level{
+        flex-direction:column;
+        align-items:center;
+        gap:25px;
+    }
+
+    .main-box{
+        width:100%;
+        min-width:auto;
+    }
+
+    .sub-level{
+        flex-direction:column;
+    }
+
+    .numeric-sections{
+        flex-direction:column;
+    }
+
+    .non-items{
+        grid-template-columns:1fr;
+    }
+
+    .root{
+        font-size:22px;
+        width:100%;
+        text-align:center;
+    }
+
+    .heading{
+        font-size:20px;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px){
+    body{
+        padding:15px;
+    }
+
+    .root{
+        font-size:18px;
+        padding:12px 18px;
+    }
+
+    .main-box{
+        padding:15px;
+        border-radius:18px;
+    }
+
+    .item{
+        font-size:14px;
+        padding:8px;
+    }
+
+    .category{
+        font-size:14px;
+    }
+
+    .footer{
+        font-size:14px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="tree">
+
+    <div class="root">Data Types in Java</div>
+
+    <div class="level">
+
+        <!-- Primitive -->
+        <div class="main-box">
+            <div class="heading primitive">Primitive Data Types</div>
+
+            <div class="sub-level">
+
+                <div class="light-box">
+                    <a href="nonnumeric.html" class="link-btn">
+                        <div class="category nonnumeric">Non Numeric Type</div>
+                    </a>
+
+                    <div class="item">boolean</div>
+                    <div class="item">char</div>
+                </div>
+
+                <div class="light-box">
+                    <div class="category numeric">Numeric Type</div>
+
+                    <div class="numeric-sections">
+
+                        <div class="inner-box">
+
+                            <a href="integer.html" class="link-btn">
+                                <div class="category integer">Integer</div>
+                            </a>
+
+                            <div class="item">byte</div>
+                            <div class="item">short</div>
+                            <div class="item">int</div>
+                            <div class="item">long</div>
+                        </div>
+
+                        <div class="inner-box">
+
+                            <a href="floatingpoint.html" class="link-btn">
+                                <div class="category floating">Floating Point</div>
+                            </a>
+
+                            <div class="item">float</div>
+                            <div class="item">double</div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Non Primitive -->
+        <div class="main-box">
+            <div class="heading nonprimitive">Non Primitive Data Types</div>
+
+            <div class="non-items">
+                <div class="item">String</div>
+                <div class="item">Array</div>
+                <div class="item">Class</div>
+                <div class="item">Object</div>
+                <div class="item">Interface</div>
+                <div class="item">Enum</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        ✨ Java Data Types Classification Chart ✨
+    </div>
+
+</div>
+
+</body>
+</html>

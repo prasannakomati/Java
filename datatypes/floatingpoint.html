@@ -1,0 +1,262 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Float Uses f or F in Java</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b,#0f172a);
+    color:white;
+    padding:30px;
+    line-height:1.8;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.title{
+    text-align:center;
+    font-size:3rem;
+    margin-bottom:20px;
+    background:linear-gradient(90deg,#00ffff,#00ff88);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    border-radius:20px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 0 20px rgba(0,255,255,0.2);
+}
+
+h2{
+    color:#00ffff;
+    margin-bottom:15px;
+}
+
+.code{
+    background:#111827;
+    padding:15px;
+    border-radius:10px;
+    overflow-x:auto;
+    margin-top:10px;
+    color:#00ff88;
+    font-family:Consolas,monospace;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th{
+    background:#00c6ff;
+    color:black;
+    padding:12px;
+}
+
+td{
+    padding:12px;
+    text-align:center;
+    border:1px solid rgba(255,255,255,0.15);
+}
+
+.highlight{
+    color:#00ff88;
+    font-weight:bold;
+}
+
+.example{
+    background:#111827;
+    padding:15px;
+    border-radius:10px;
+    margin-top:10px;
+    font-family:Consolas,monospace;
+}
+
+.note{
+    background:rgba(0,255,136,0.1);
+    border-left:5px solid #00ff88;
+    padding:15px;
+    border-radius:10px;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#94a3b8;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1 class="title">
+        Why Float Uses f or F in Java?
+    </h1>
+
+    <div class="card">
+        <h2>What is Float?</h2>
+
+        <p>
+            <span class="highlight">float</span> is a primitive data type
+            used to store decimal numbers.
+        </p>
+
+        <table>
+            <tr>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Precision</th>
+            </tr>
+
+            <tr>
+                <td>float</td>
+                <td>4 Bytes</td>
+                <td>6-7 Digits</td>
+            </tr>
+
+            <tr>
+                <td>double</td>
+                <td>8 Bytes</td>
+                <td>15-16 Digits</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Why Do We Need f or F?</h2>
+
+        <p>
+            In Java, every decimal number is considered a
+            <span class="highlight">double</span> by default.
+        </p>
+
+        <div class="code">
+float num = 10.5;
+        </div>
+
+        <p style="margin-top:15px;">
+            The above code gives a compilation error because
+            <b>10.5 is treated as a double</b>.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Incorrect Example ❌</h2>
+
+        <div class="example">
+float price = 10.5;
+        </div>
+
+        <p style="margin-top:15px;color:#ff7675;">
+            Error: Type mismatch. Cannot convert from double to float.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Correct Example ✅</h2>
+
+        <div class="example">
+float price = 10.5f;
+        </div>
+
+        <br>
+
+        <div class="example">
+float pi = 3.14F;
+        </div>
+
+        <p style="margin-top:15px;">
+            The suffix <b>f</b> or <b>F</b> tells Java that
+            the number is a float literal.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Java Interpretation</h2>
+
+        <table>
+            <tr>
+                <th>Value</th>
+                <th>Java Treats As</th>
+            </tr>
+
+            <tr>
+                <td>3.14</td>
+                <td>double</td>
+            </tr>
+
+            <tr>
+                <td>3.14f</td>
+                <td>float</td>
+            </tr>
+
+            <tr>
+                <td>100.0</td>
+                <td>double</td>
+            </tr>
+
+            <tr>
+                <td>100.0F</td>
+                <td>float</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Alternative Using Type Casting</h2>
+
+        <div class="example">
+float num = (float)10.5;
+        </div>
+
+        <p style="margin-top:15px;">
+            This works, but using <b>f</b> is easier and more common.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Easy Rule to Remember</h2>
+
+        <div class="note">
+            Decimal numbers are double by default in Java.<br><br>
+
+            If you want a float value, always add
+            <b>f</b> or <b>F</b> at the end.
+        </div>
+
+        <div class="example" style="margin-top:20px;">
+3.14   → double<br>
+3.14f  → float<br>
+99.99  → double<br>
+99.99F → float
+        </div>
+    </div>
+
+    <div class="footer">
+        Java Primitive Data Types Learning Page
+    </div>
+
+</div>
+
+</body>
+</html>
+

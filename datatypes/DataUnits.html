@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Units - Standard Base-2 (Binary)</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --card-bg-color: #fff;
+            --hover-card-bg: #e1f5fe; /* Light blue on hover */
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--card-bg-color);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            animation: fadeIn 1s ease-out;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+            animation: slideInDown 0.8s ease-out;
+        }
+
+        .unit-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .unit-item {
+            background-color: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all var(--transition-speed) ease;
+            position: relative; /* For pseudo-elements */
+            overflow: hidden; /* For pseudo-elements */
+            animation: slideInLeft 0.5s ease-out; /* Stagger this with JS for better effect */
+            opacity: 0; /* Hidden initially, JS will fade in */
+            transform: translateX(-20px);
+        }
+
+        /* Staggered animation classes (applied via JS) */
+        .unit-item.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .unit-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background-color: var(--hover-card-bg);
+            border-color: var(--primary-color);
+        }
+
+        /* Shine effect on hover */
+        .unit-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            transition: all 0.75s;
+        }
+
+        .unit-item:hover::after {
+            left: 150%;
+        }
+
+        .unit-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .unit-symbol {
+            font-size: 0.9em;
+            color: #777;
+            margin-left: 10px;
+        }
+
+        .unit-value {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+        }
+
+        .unit-value .number {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        /* Keyframes for animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Standard Digital Data Units (Binary Base-2)</h1>
+    <ul class="unit-list">
+        <li class="unit-item">
+            <span class="unit-name">1 Bit <span class="unit-symbol">(bit)</span></span>
+            <span class="unit-value">= <span class="number">0</span> or <span class="number">1</span></span>
+        </li>
+        <li class="unit-item">
+            <span class="unit-name">1 Byte <span class="unit-symbol">(B)</span></span>
+            <span class="unit-value">= <span class="number">8</span> bits</span>
+        </li>
+        <li class="unit-item">
+            <span class="unit-name">1 Kilobyte <span class="unit-symbol">(KB)</span></span>
+            <span class="unit-value">= <span class="number">1,024</span> Bytes</span>
+        </li>
+        <li class="unit-item">
+            <span class="unit-name">1 Megabyte <span class="unit-symbol">(MB)</span></span>
+            <span class="unit-value">= <span class="number">1,024</span> KB</span>
+        </li>
+        <li class="unit-item">
+            <span class="unit-name">1 Gigabyte <span class="unit-symbol">(GB)</span></span>
+            <span class="unit-value">= <span class="number">1,024</span> MB</span>
+        </li>
+        <li class="unit-item">
+            <span class="unit-name">1 Terabyte <span class="unit-symbol">(TB)</span></span>
+            <span class="unit-value">= <span class="number">1,024</span> GB</span>
+        </li>
+        <li class="unit-item">
+            <span class="unit-name">1 Petabyte <span class="unit-symbol">(PB)</span></span>
+            <span class="unit-value">= <span class="number">1,024</span> TB</span>
+        </li>
+    </ul>
+</div>
+
+<script>
+    // Simple script for staggered animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const items = document.querySelectorAll('.unit-item');
+        items.forEach((item, index) => {
+            setTimeout(() => {
+                item.classList.add('show');
+            }, index * 150); // Delay each item by 150ms
+        });
+    });
+</script>
+
+</body>
+</html>

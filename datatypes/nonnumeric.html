@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Java Boolean & Char Data Types</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+ background: linear-gradient(135deg, #0a0f2c, #1a237e, #0f2027, #050816); color:white;
+}
+
+/* Container */
+.container{
+    width:90%;
+    margin:auto;
+    padding:30px;
+}
+
+/* Section Card */
+.card{
+    background: rgba(255,255,255,0.08);
+    padding:25px;
+    margin:20px 0;
+    border-radius:15px;
+    box-shadow:0 0 20px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 1.2s ease-in-out;
+}
+
+/* Headings animation */
+h1,h2{
+    color:#00e6e6;
+    animation: slideDown 1s ease-in-out;
+}
+
+/* Code block */
+pre{
+    background:#111;
+    padding:15px;
+    border-radius:10px;
+    overflow-x:auto;
+    border-left:5px solid #00e6e6;
+}
+
+/* Simple animations */
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(30px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes slideDown{
+    from{opacity:0; transform:translateY(-20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+/* Highlight box */
+.highlight{
+    background: rgba(0,230,230,0.1);
+    padding:10px;
+    border-left:4px solid #00e6e6;
+    margin:10px 0;
+    border-radius:8px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<!-- BOOLEAN SECTION -->
+<div class="card">
+<h1>Boolean Data Type in Java</h1>
+
+<div class="highlight">
+The boolean data type is used to store only two values: <b>true</b> or <b>false</b>.
+</div>
+
+<h2>Example Program</h2>
+<pre>
+public class BooleanDemo {
+    public static void main(String[] args) {
+
+        boolean isJavaEasy = true;
+        boolean isRaining = false;
+
+        System.out.println(isJavaEasy);
+        System.out.println(isRaining);
+    }
+}
+</pre>
+
+<h2>Important Points</h2>
+<ul>
+<li>✔ Only true or false are allowed</li>
+<li>✔ Used in conditions and decision making</li>
+<li>✔ Important Note
+Unlike C and C++, Java does not treat 1 as true and 0 as false. A boolean variable can store only true or false.</li>
+</ul>
+
+<div class="highlight">
+Example: <br>
+boolean canVote = age >= 18;
+</div>
+
+</div>
+
+<!-- CHAR SECTION -->
+<div class="card">
+<h1>Char Data Type in Java</h1>
+
+<div class="highlight">
+char is used to store a single character (2 bytes Unicode).
+</div>
+
+<h2>What it can store</h2>
+<ul>
+<li>Uppercase letters (A–Z)</li>
+<li>Lowercase letters (a–z)</li>
+<li>Digits (0–9)</li>
+<li>Symbols (@, $, %, etc.)</li>
+<li>Unicode characters (Telugu, Hindi, Chinese)</li>
+</ul>
+
+<h2>Example Program</h2>
+<pre>
+public class CharDemo {
+    public static void main(String[] args) {
+
+        char english = 'A';
+        char telugu = 'అ';
+        char hindi = 'क';
+        char symbol = '@';
+
+        System.out.println(english);
+        System.out.println(telugu);
+        System.out.println(hindi);
+        System.out.println(symbol);
+    }
+}
+</pre>
+
+<h2>Use Cases</h2>
+<ul>
+<li>Grade system: char grade = 'A';</li>
+<li>Gender code: char gender = 'M';</li>
+</ul>
+
+<div class="highlight">
+A char value must always be enclosed in single quotes (' ')
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
