@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive RAM and Main Storage Swapping Animation</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #182848 0%, #0b1220 48%, #050914 100%);
+    color: #eef4ff;
+    display: flex;
+    justify-content: center;
+    padding: 30px 16px;
+  }
+  .app {
+    width: min(1120px, 100%);
+    text-align: center;
+  }
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px;
+    color:#8fb4ff; text-decoration:none; font-size:.85rem; font-weight:600;
+    margin-bottom:18px; padding:8px 16px; border-radius:999px;
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+    transition:.2s ease;
+  }
+  .back-link:hover{ background:rgba(255,255,255,.09); color:#fff; }
+  h1 {
+    margin: 0 0 8px;
+    font-size: clamp(1.55rem, 4vw, 2.45rem);
+    letter-spacing: .2px;
+  }
+  .subtitle {
+    margin: 0 auto 24px;
+    color: #aebbd2;
+    font-size: .98rem;
+  }
+  .memory-layout {
+    display: grid;
+    grid-template-columns: 1fr 110px 1fr;
+    align-items: center;
+    gap: 20px;
+  }
+  .memory-box {
+    min-height: 430px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 26px;
+    background: rgba(17, 27, 48, .82);
+    box-shadow: 0 20px 55px rgba(0,0,0,.32), inset 0 1px rgba(255,255,255,.06);
+    backdrop-filter: blur(12px);
+  }
+  .memory-box h2 {
+    margin: 0 0 6px;
+    font-size: 1.3rem;
+  }
+  .memory-box p {
+    margin: 0 0 24px;
+    color: #9eacc4;
+    font-size: .86rem;
+  }
+  .ram-box {
+    border-color: rgba(75, 180, 255, .35);
+  }
+  .storage-box {
+    border-color: rgba(181, 117, 255, .35);
+  }
+  .slots {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .slot {
+    min-height: 140px;
+    border: 2px dashed rgba(111, 187, 255, .28);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: .25s ease;
+    background: rgba(67, 146, 221, .045);
+  }
+  .slot::before {
+    content: "RAM SLOT";
+    position: absolute;
+    top: 10px;
+    left: 14px;
+    font-size: .62rem;
+    letter-spacing: 1.5px;
+    color: #7186a5;
+  }
+  .slot.over {
+    transform: scale(1.025);
+    border-color: #54c7ff;
+    background: rgba(54, 177, 255, .13);
+    box-shadow: 0 0 30px rgba(55, 187, 255, .2);
+  }
+  .slot.filled {
+    border-style: solid;
+    border-color: rgba(91, 194, 255, .4);
+  }
+  .app-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+    min-height: 285px;
+    align-content: center;
+  }
+  .app-icon {
+    width: 104px;
+    margin: auto;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    transition: transform .2s ease, filter .2s ease;
+  }
+  .app-icon:hover {
+    transform: translateY(-6px) scale(1.04);
+    filter: drop-shadow(0 9px 18px rgba(0,0,0,.3));
+  }
+  .app-icon:active { cursor: grabbing; }
+  .icon {
+    width: 66px;
+    height: 66px;
+    margin: auto;
+    border-radius: 19px;
+    display: grid;
+    place-items: center;
+    font-size: 31px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  }
+  .label {
+    margin-top: 9px;
+    font-size: .78rem;
+    font-weight: 600;
+    color: #dbe7f8;
+  }
+  .whatsapp { background: linear-gradient(145deg,#35d879,#0caa59); }
+  .instagram { background: linear-gradient(135deg,#ffd66b,#e1306c 50%,#7b2cff); }
+  .youtube { background: linear-gradient(145deg,#ff5555,#d60000); }
+  .spotify { background: linear-gradient(145deg,#41e67c,#079b4d); }
+
+  .ram-app {
+    transform: scale(.9);
+  }
+  .ram-app .icon {
+    width: 58px; height: 58px; font-size: 27px; border-radius: 17px;
+  }
+  .ram-app .label { font-size: .73rem; }
+
+  .arrows {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+  .arrow {
+    width: 90px;
+    height: 45px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    background: rgba(255,255,255,.055);
+    border: 1px solid rgba(255,255,255,.1);
+    animation: pulse 1.8s infinite ease-in-out;
+  }
+  .arrow.right { color: #55caff; }
+  .arrow.left { color: #bd82ff; animation-delay: .3s; }
+  @keyframes pulse {
+    50% { transform: translateX(7px); box-shadow: 0 0 24px rgba(94,188,255,.14); }
+  }
+  .arrow.left { animation-name: pulseLeft; }
+  @keyframes pulseLeft {
+    50% { transform: translateX(-7px); box-shadow: 0 0 24px rgba(189,130,255,.14); }
+  }
+  .status {
+    min-height: 44px;
+    margin: 22px auto 18px;
+    width: min(700px, 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.055);
+    border: 1px solid rgba(255,255,255,.09);
+    color: #cbd8eb;
+    font-weight: 700;
+    transition: .25s;
+  }
+  .status.alert {
+    color: #ffd36a;
+    border-color: rgba(255,211,106,.3);
+    box-shadow: 0 0 24px rgba(255,193,64,.08);
+  }
+  .status.success {
+    color: #6ff0a0;
+    border-color: rgba(111,240,160,.3);
+    box-shadow: 0 0 24px rgba(70,230,140,.1);
+  }
+  .explanation {
+    margin: 12px auto 0;
+    max-width: 900px;
+    padding: 18px 20px;
+    border-radius: 18px;
+    color: #aebbd2;
+    line-height: 1.6;
+    font-size: .9rem;
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.07);
+  }
+  .explanation strong { color: #e9f2ff; }
+  .drag-ghost {
+    opacity: .45;
+  }
+  @media (max-width: 780px) {
+    .memory-layout {
+      grid-template-columns: 1fr;
+    }
+    .arrows {
+      flex-direction: row;
+      justify-content: center;
+      order: 2;
+    }
+    .arrow { transform: rotate(90deg); }
+    .arrow.left { transform: rotate(90deg); }
+    .memory-box { min-height: 330px; }
+  }
+  @media (max-width: 430px) {
+    .app-grid { gap: 12px; }
+    .app-icon { width: 85px; }
+    .icon { width: 58px; height: 58px; font-size: 27px; }
+    .memory-box { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <a class="back-link" href="index.html">← back to home</a>
+  <h1>Interactive RAM ↔ Main Storage</h1>
+  <p class="subtitle">Drag applications between memory areas to understand <b>Swapping</b>.</p>
+
+  <div class="memory-layout">
+    <section class="memory-box ram-box">
+      <h2>🧠 Main Memory (RAM)</h2>
+      <p>Only 2 applications can stay in RAM.</p>
+      <div class="slots" id="ramSlots">
+        <div class="slot" data-slot="0"></div>
+        <div class="slot" data-slot="1"></div>
+      </div>
+    </section>
+
+    <div class="arrows" aria-hidden="true">
+      <div class="arrow right">→</div>
+      <div class="arrow left">←</div>
+    </div>
+
+    <section class="memory-box storage-box" id="storage">
+      <h2>💾 Main Storage</h2>
+      <p>Hard Disk / SSD — applications waiting here.</p>
+      <div class="app-grid" id="storageApps"></div>
+    </section>
+  </div>
+
+  <div class="status" id="status">Drag any application from Storage → RAM</div>
+
+  <div class="explanation">
+    <strong>💡 Swapping:</strong> When RAM is full, an existing application is moved to main storage
+    to free RAM space for another application. This process is called <strong>Swapping</strong>.
+  </div>
+</main>
+
+<script>
+const apps = [
+  { id: "whatsapp", name: "WhatsApp", emoji: "💬", cls: "whatsapp" },
+  { id: "instagram", name: "Instagram", emoji: "📷", cls: "instagram" },
+  { id: "youtube", name: "YouTube", emoji: "▶️", cls: "youtube" },
+  { id: "spotify", name: "Spotify", emoji: "🎵", cls: "spotify" }
+];
+
+const storage = document.getElementById("storage");
+const storageApps = document.getElementById("storageApps");
+const slots = [...document.querySelectorAll(".slot")];
+const status = document.getElementById("status");
+
+let dragged = null;
+let source = null;
+
+function createApp(app, inRam = false) {
+  const el = document.createElement("div");
+  el.className = "app-icon" + (inRam ? " ram-app" : "");
+  el.dataset.id = app.id;
+  el.draggable = true;
+  el.innerHTML = `
+    <div class="icon ${app.cls}">${app.emoji}</div>
+    <div class="label">${app.name}</div>
+  `;
+
+  el.addEventListener("dragstart", e => {
+    dragged = app.id;
+    source = el.closest(".slot") ? "ram" : "storage";
+    el.classList.add("drag-ghost");
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", app.id);
+  });
+
+  el.addEventListener("dragend", () => {
+    el.classList.remove("drag-ghost");
+    slots.forEach(s => s.classList.remove("over"));
+    dragged = null;
+    source = null;
+  });
+
+  return el;
+}
+
+function getApp(id) {
+  return apps.find(a => a.id === id);
+}
+
+function renderStorage() {
+  const ramIds = slots
+    .map(s => s.querySelector(".app-icon")?.dataset.id)
+    .filter(Boolean);
+
+  storageApps.innerHTML = "";
+  apps.filter(a => !ramIds.includes(a.id))
+      .forEach(a => storageApps.appendChild(createApp(a)));
+}
+
+function putIntoSlot(appId, slot) {
+  const app = getApp(appId);
+  if (!app || slot.querySelector(".app-icon")) return false;
+
+  slot.appendChild(createApp(app, true));
+  slot.classList.add("filled");
+  return true;
+}
+
+function clearEmptyClass() {
+  slots.forEach(slot => {
+    slot.classList.toggle("filled", !!slot.querySelector(".app-icon"));
+  });
+}
+
+function showStatus(text, type = "") {
+  status.textContent = text;
+  status.className = "status" + (type ? " " + type : "");
+}
+
+slots.forEach(slot => {
+  slot.addEventListener("dragover", e => {
+    e.preventDefault();
+    slot.classList.add("over");
+  });
+
+  slot.addEventListener("dragleave", () => slot.classList.remove("over"));
+
+  slot.addEventListener("drop", e => {
+    e.preventDefault();
+    slot.classList.remove("over");
+    const id = e.dataTransfer.getData("text/plain");
+
+    if (source !== "storage") return;
+
+    if (slots.every(s => s.querySelector(".app-icon"))) {
+      showStatus("RAM is Full — Swapping Required!", "alert");
+      return;
+    }
+
+    if (putIntoSlot(id, slot)) {
+      renderStorage();
+      clearEmptyClass();
+
+      if (slots.every(s => s.querySelector(".app-icon"))) {
+        showStatus("RAM is Full", "alert");
+      } else {
+        showStatus("Application loaded into RAM");
+      }
+    }
+  });
+});
+
+storage.addEventListener("dragover", e => e.preventDefault());
+
+storage.addEventListener("drop", e => {
+  e.preventDefault();
+  const id = e.dataTransfer.getData("text/plain");
+
+  if (source !== "ram") return;
+
+  const ramSlot = slots.find(s => s.querySelector(`.app-icon[data-id="${id}"]`));
+  if (!ramSlot) return;
+
+  const appEl = ramSlot.querySelector(".app-icon");
+  const app = getApp(id);
+
+  // Smooth visual transfer
+  const start = appEl.getBoundingClientRect();
+  const end = storage.getBoundingClientRect();
+
+  appEl.style.position = "fixed";
+  appEl.style.left = start.left + "px";
+  appEl.style.top = start.top + "px";
+  appEl.style.zIndex = 1000;
+  appEl.style.pointerEvents = "none";
+  document.body.appendChild(appEl);
+
+  requestAnimationFrame(() => {
+    appEl.style.transition = "all .65s cubic-bezier(.2,.8,.2,1)";
+    appEl.style.left = (end.left + end.width / 2 - 40) + "px";
+    appEl.style.top = (end.top + end.height / 2 - 40) + "px";
+    appEl.style.transform = "scale(.65)";
+    appEl.style.opacity = ".2";
+  });
+
+  setTimeout(() => {
+    ramSlot.innerHTML = "";
+    ramSlot.classList.remove("filled");
+    renderStorage();
+    showStatus("Swapping Completed! ✨", "success");
+  }, 700);
+});
+
+renderStorage();
+</script>
+</body>
+</html>

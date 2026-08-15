@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧠 Memory Assignment &amp; Variable Swapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#070912;
+    --bg-2:#0c0f21;
+    --blue:#3b82f6;
+    --purple:#a855f7;
+    --cyan:#22d3ee;
+    --green:#22c55e;
+    --red:#ef4444;
+    --yellow:#eab308;
+    --glass:rgba(255,255,255,0.055);
+    --glass-strong:rgba(255,255,255,0.09);
+    --border-glass:rgba(255,255,255,0.14);
+    --text-dim:rgba(230,235,255,0.6);
+    --text:#eef1ff;
+    --font-display:'Sora', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--font-display);
+    color:var(--text);
+    background:
+      radial-gradient(ellipse 900px 500px at 12% 8%, rgba(168,85,247,0.24), transparent 60%),
+      radial-gradient(ellipse 900px 600px at 88% 18%, rgba(34,211,238,0.16), transparent 60%),
+      radial-gradient(ellipse 1000px 700px at 50% 95%, rgba(59,130,246,0.20), transparent 60%),
+      linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ---------- ambient grid + orbs ---------- */
+  .bg-grid{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+    background-size:46px 46px;
+    mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 40%, transparent 90%);
+  }
+  .orb{position:fixed; border-radius:50%; filter:blur(70px); opacity:0.35; z-index:0; pointer-events:none;}
+  .orb1{width:380px;height:380px; background:var(--purple); top:-100px; left:-80px; animation:float1 14s ease-in-out infinite;}
+  .orb2{width:420px;height:420px; background:var(--cyan); bottom:10%; right:-120px; animation:float2 16s ease-in-out infinite;}
+  @keyframes float1{0%,100%{transform:translate(0,0);}50%{transform:translate(40px,60px);}}
+  @keyframes float2{0%,100%{transform:translate(0,0);}50%{transform:translate(-30px,-50px);}}
+
+  main{position:relative; z-index:1;}
+
+  /* ---------- header ---------- */
+  header{
+    text-align:center;
+    padding:64px 20px 30px;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-mono); font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--cyan); background:var(--glass); border:1px solid var(--border-glass);
+    padding:7px 16px; border-radius:999px; backdrop-filter:blur(12px);
+  }
+  h1{
+    font-size:clamp(28px,4.6vw,46px); font-weight:800; margin:20px auto 10px; max-width:760px; line-height:1.15;
+    background:linear-gradient(100deg,#fff 10%, var(--cyan) 45%, var(--purple) 80%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  header p{color:var(--text-dim); max-width:560px; margin:0 auto; font-size:15.5px; line-height:1.6;}
+
+  section{
+    max-width:1000px; margin:0 auto; padding:50px 20px 90px;
+    min-height:92vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .section-tag{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--purple); margin-bottom:8px;
+  }
+  .section-title{font-size:clamp(22px,3.4vw,30px); font-weight:700; margin:0 0 6px; text-align:center;}
+  .section-sub{color:var(--text-dim); text-align:center; max-width:520px; margin:0 0 40px; font-size:14.5px; line-height:1.6;}
+
+  /* ---------- glass panel ---------- */
+  .panel{
+    width:100%;
+    background:var(--glass);
+    border:1px solid var(--border-glass);
+    border-radius:26px;
+    backdrop-filter:blur(20px) saturate(140%);
+    -webkit-backdrop-filter:blur(20px) saturate(140%);
+    box-shadow:0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    padding:40px clamp(16px,4vw,44px) 34px;
+    position:relative;
+  }
+
+  /* ---------- memory blocks ---------- */
+  .blocks-row{
+    display:flex; gap:28px; justify-content:center; flex-wrap:wrap; margin:10px 0 8px;
+  }
+  .mem-block{
+    width:190px; min-height:190px;
+    border-radius:20px;
+    background:linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
+    border:1.5px solid var(--border-glass);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    position:relative;
+    transition:box-shadow .45s ease, border-color .45s ease, transform .25s ease;
+    box-shadow:0 0 0 rgba(0,0,0,0);
+  }
+  .mem-block.drop-hover{ transform:scale(1.035); border-color:var(--cyan); box-shadow:0 0 34px rgba(34,211,238,0.35);}
+  .mem-block .mem-label{
+    font-family:var(--font-mono); font-size:13px; letter-spacing:.1em; color:var(--text-dim);
+    display:flex; align-items:center; gap:6px; position:absolute; top:14px; left:18px;
+  }
+  .mem-block .mem-addr{
+    position:absolute; top:14px; right:16px; font-family:var(--font-mono); font-size:10px; color:rgba(255,255,255,0.25);
+  }
+  .mem-slot{
+    width:118px; height:118px; border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,0.03);
+    border:1.5px dashed rgba(255,255,255,0.16);
+    position:relative;
+  }
+  .chip{
+    width:92px; height:92px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-weight:700; font-size:26px;
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.16), rgba(59,130,246,0.28));
+    border:2px solid var(--blue);
+    color:#fff;
+    box-shadow:0 0 22px rgba(59,130,246,0.55), inset 0 0 18px rgba(59,130,246,0.25);
+    cursor:grab; user-select:none; touch-action:none;
+    transition:transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .4s ease, border-color .4s ease, background .4s ease;
+    position:relative; z-index:2;
+  }
+  .chip.empty{
+    background:rgba(255,255,255,0.04); border:2px dashed rgba(255,255,255,0.22);
+    box-shadow:none; color:rgba(255,255,255,0.3); font-size:20px; cursor:default;
+  }
+  .chip:active{cursor:grabbing;}
+  .chip.pop{ animation:popIn .5s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes popIn{
+    0%{transform:scale(0.5); opacity:0.4;}
+    55%{transform:scale(1.22);}
+    100%{transform:scale(1);}
+  }
+  .mem-block.glow-blue .chip{ border-color:var(--blue); box-shadow:0 0 30px rgba(59,130,246,0.75), inset 0 0 20px rgba(59,130,246,0.3);}
+  .mem-block.glow-cyan .chip{ border-color:var(--cyan); box-shadow:0 0 30px rgba(34,211,238,0.8), inset 0 0 20px rgba(34,211,238,0.3);}
+  .mem-block.glow-purple .chip{ border-color:var(--purple); box-shadow:0 0 30px rgba(168,85,247,0.8), inset 0 0 20px rgba(168,85,247,0.3);}
+  .mem-block.glow-green{ border-color:var(--green); box-shadow:0 0 34px rgba(34,197,94,0.45);}
+  .mem-block.glow-green .chip{ border-color:var(--green); box-shadow:0 0 32px rgba(34,197,94,0.85), inset 0 0 20px rgba(34,197,94,0.35);}
+  .mem-block.flash-red{ border-color:var(--red); box-shadow:0 0 36px rgba(239,68,68,0.5); animation:shake .5s ease;}
+  .mem-block.flash-red .chip{ border-color:var(--red); box-shadow:0 0 34px rgba(239,68,68,0.9), inset 0 0 20px rgba(239,68,68,0.4);}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-6px);}
+    40%{transform:translateX(5px);}
+    60%{transform:translateX(-4px);}
+    80%{transform:translateX(3px);}
+  }
+  .warn-badge{
+    position:absolute; top:-14px; right:-10px; font-size:22px;
+    filter:drop-shadow(0 0 8px rgba(239,68,68,0.9));
+    animation:warnPop .6s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes warnPop{ 0%{transform:scale(0) rotate(-20deg); opacity:0;} 60%{transform:scale(1.3) rotate(8deg);} 100%{transform:scale(1) rotate(0); opacity:1;} }
+
+  .ripple{
+    position:absolute; border-radius:50%; pointer-events:none;
+    border:2px solid currentColor; opacity:0.8; z-index:1;
+    animation:rippleAnim .7s ease-out forwards;
+  }
+  @keyframes rippleAnim{ to{ width:200px; height:200px; margin-left:-100px; margin-top:-100px; opacity:0;} }
+
+  /* dragging clone + trail */
+  .chip-clone{
+    position:fixed; top:0; left:0; z-index:999; pointer-events:none;
+    width:80px; height:80px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-weight:700; font-size:24px; color:#fff;
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.35), rgba(168,85,247,0.55));
+    border:2px solid var(--purple);
+    box-shadow:0 0 34px rgba(168,85,247,0.9);
+    transform:translate(-50%,-50%);
+  }
+  .trail-dot{
+    position:fixed; z-index:998; pointer-events:none; border-radius:50%;
+    width:10px; height:10px; background:var(--cyan);
+    box-shadow:0 0 10px var(--cyan), 0 0 4px #fff;
+    animation:trailFade .6s ease-out forwards;
+  }
+  @keyframes trailFade{ to{ opacity:0; transform:scale(0.2);} }
+
+  .arrow-swap{ font-size:26px; color:var(--text-dim); align-self:center; opacity:.6; }
+
+  /* ---------- message panel ---------- */
+  .msg-box{
+    margin-top:30px; min-height:52px; width:100%; max-width:640px;
+    text-align:center; font-size:15px; font-weight:600; line-height:1.55;
+    padding:14px 22px; border-radius:16px;
+    background:var(--glass-strong); border:1px solid var(--border-glass);
+    opacity:0; transform:translateY(8px);
+    transition:opacity .4s ease, transform .4s ease, border-color .4s ease, box-shadow .4s ease;
+  }
+  .msg-box.show{ opacity:1; transform:translateY(0); }
+  .msg-box.c-red{ border-color:rgba(239,68,68,0.5); box-shadow:0 0 22px rgba(239,68,68,0.25); color:#ffd7d7;}
+  .msg-box.c-green{ border-color:rgba(34,197,94,0.5); box-shadow:0 0 22px rgba(34,197,94,0.25); color:#d3ffe4;}
+  .msg-box.c-blue{ border-color:rgba(59,130,246,0.5); box-shadow:0 0 22px rgba(59,130,246,0.25); color:#dbe8ff;}
+  .msg-box.c-yellow{ border-color:rgba(234,179,8,0.5); box-shadow:0 0 22px rgba(234,179,8,0.2); color:#fff3cf;}
+
+  .hint{ margin-top:18px; font-size:13px; color:var(--text-dim); font-family:var(--font-mono); text-align:center;}
+
+  /* tip / continue */
+  .tip-panel{
+    margin-top:28px; text-align:center; max-width:560px;
+    opacity:0; max-height:0; overflow:hidden;
+    transition:opacity .6s ease, max-height .6s ease, margin .6s ease;
+  }
+  .tip-panel.reveal{ opacity:1; max-height:220px; }
+  .tip-panel p{
+    font-size:15.5px; font-weight:600; color:#fff9d6;
+    text-shadow:0 0 18px rgba(234,179,8,0.6);
+    margin:0 0 18px;
+  }
+  .btn{
+    font-family:var(--font-display); font-weight:700; font-size:14px; letter-spacing:.02em;
+    color:#04121a; background:linear-gradient(120deg,var(--cyan),var(--green));
+    border:none; padding:13px 28px; border-radius:999px; cursor:pointer;
+    box-shadow:0 0 26px rgba(34,211,238,0.5);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .btn:hover{ transform:translateY(-2px) scale(1.03); box-shadow:0 0 34px rgba(34,211,238,0.75);}
+  .btn.ghost{
+    background:transparent; color:var(--text-dim); border:1px solid var(--border-glass);
+    box-shadow:none; margin-top:14px; font-size:12.5px; padding:9px 18px;
+  }
+  .btn.ghost:hover{ color:#fff; border-color:rgba(255,255,255,0.35); transform:none; box-shadow:0 0 16px rgba(255,255,255,0.1);}
+
+  /* ---------- step indicator ---------- */
+  .steps{
+    display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:34px;
+  }
+  .step{
+    font-family:var(--font-mono); font-size:12.5px; padding:9px 16px; border-radius:999px;
+    background:var(--glass); border:1px solid var(--border-glass); color:var(--text-dim);
+    transition:all .4s ease; display:flex; align-items:center; gap:7px;
+  }
+  .step .num{
+    width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,0.1); font-size:10.5px;
+  }
+  .step.active{ color:#fff; border-color:var(--cyan); box-shadow:0 0 18px rgba(34,211,238,0.35); background:rgba(34,211,238,0.08);}
+  .step.active .num{ background:var(--cyan); color:#03202a; }
+  .step.done{ color:var(--green); border-color:rgba(34,197,94,0.5); background:rgba(34,197,94,0.06);}
+  .step.done .num{ background:var(--green); color:#04220f; }
+
+  /* success banner */
+  .success-banner{
+    margin-top:30px; width:100%; max-width:520px; text-align:center;
+    padding:26px 20px; border-radius:20px;
+    background:linear-gradient(160deg, rgba(34,197,94,0.14), rgba(34,197,94,0.03));
+    border:1.5px solid rgba(34,197,94,0.55);
+    box-shadow:0 0 40px rgba(34,197,94,0.35);
+    opacity:0; max-height:0; overflow:hidden;
+    transition:opacity .6s ease, max-height .6s ease, margin .6s ease;
+  }
+  .success-banner.reveal{ opacity:1; max-height:260px; margin-top:30px;}
+  .success-banner .check{ font-size:40px; display:block; margin-bottom:6px; animation:popIn .6s cubic-bezier(.34,1.56,.64,1);}
+  .success-banner h3{ margin:4px 0 10px; font-size:20px; letter-spacing:.05em;}
+  .success-banner .final-vals{ font-family:var(--font-mono); font-size:16px; color:#d3ffe4; margin-bottom:10px;}
+  .success-banner p{ margin:0; color:#c9ffdd; font-size:14px;}
+
+  /* confetti */
+  .confetti-piece{
+    position:fixed; top:-20px; z-index:1000; pointer-events:none; border-radius:2px;
+    animation:confettiFall linear forwards;
+  }
+  @keyframes confettiFall{
+    to{ transform:translateY(110vh) rotate(540deg); opacity:0.9; }
+  }
+
+  footer{ text-align:center; padding:30px 20px 60px; color:var(--text-dim); font-size:12.5px; font-family:var(--font-mono);}
+
+  @media (max-width:640px){
+    .mem-block{ width:150px; min-height:160px; }
+    .mem-slot{ width:96px; height:96px; }
+    .chip{ width:76px; height:76px; font-size:21px; }
+    .blocks-row{ gap:18px; }
+    .arrow-swap{ display:none; }
+    .panel{ padding:30px 14px 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<main>
+  <header>
+    <span class="eyebrow">🧠 memory · variables · swapping</span>
+    <h1>Memory Assignment &amp; Variable Swapping</h1>
+    <p>Drag values between memory blocks to see how assignment really works — and why swapping two variables needs a helping hand.</p>
+  </header>
+
+  <!-- ===================== SECTION 1 ===================== -->
+  <section id="section1">
+    <div class="section-tag">Section 01</div>
+    <h2 class="section-title">🧠 Direct Assignment / Overwriting</h2>
+    <p class="section-sub">Drag the glowing chip from one block onto the other. Watch what happens to the value that was already sitting there.</p>
+
+    <div class="panel">
+      <div class="blocks-row">
+        <div class="mem-block" data-section="1" data-key="A">
+          <div class="mem-label">🧠 A</div>
+          <div class="mem-addr">0x01</div>
+          <div class="mem-slot" id="slot-1-A">
+            <div class="chip" draggable-chip data-section="1" data-key="A">10</div>
+          </div>
+        </div>
+        <div class="arrow-swap">⇄</div>
+        <div class="mem-block" data-section="1" data-key="B">
+          <div class="mem-label">💾 B</div>
+          <div class="mem-addr">0x02</div>
+          <div class="mem-slot" id="slot-1-B">
+            <div class="chip" draggable-chip data-section="1" data-key="B">20</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hint">↕ drag A → B, or B → A — try both directions</div>
+      <div class="msg-box" id="msg1"></div>
+
+      <div class="tip-panel" id="tip1">
+        <p>💡 To swap values safely, we need a temporary storage location.</p>
+        <button class="btn" onclick="goToSection2()">Continue to Section 2 →</button>
+      </div>
+    </div>
+    <button class="btn ghost" onclick="resetSection1()">↺ reset section</button>
+  </section>
+
+  <!-- ===================== SECTION 2 ===================== -->
+  <section id="section2">
+    <div class="section-tag">Section 02</div>
+    <h2 class="section-title">🔄 Safe Swapping Using TEMP</h2>
+    <p class="section-sub">Follow the three highlighted steps for a clean guided swap — or drag freely between any of the three blocks to explore.</p>
+
+    <div class="steps" id="steps">
+      <div class="step" data-step="0"><span class="num">①</span> A → TEMP</div>
+      <div class="step" data-step="1"><span class="num">②</span> B → A</div>
+      <div class="step" data-step="2"><span class="num">③</span> TEMP → B</div>
+    </div>
+
+    <div class="panel">
+      <div class="blocks-row">
+        <div class="mem-block" data-section="2" data-key="A">
+          <div class="mem-label">🧠 A</div>
+          <div class="mem-addr">0x01</div>
+          <div class="mem-slot" id="slot-2-A">
+            <div class="chip" draggable-chip data-section="2" data-key="A">10</div>
+          </div>
+        </div>
+        <div class="mem-block" data-section="2" data-key="B">
+          <div class="mem-label">💾 B</div>
+          <div class="mem-addr">0x02</div>
+          <div class="mem-slot" id="slot-2-B">
+            <div class="chip" draggable-chip data-section="2" data-key="B">20</div>
+          </div>
+        </div>
+        <div class="mem-block" data-section="2" data-key="TEMP">
+          <div class="mem-label">📦 TEMP</div>
+          <div class="mem-addr">0x03</div>
+          <div class="mem-slot" id="slot-2-TEMP">
+            <div class="chip empty" draggable-chip data-section="2" data-key="TEMP">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hint">↕ drag any chip onto any block — A, B or TEMP</div>
+      <div class="msg-box" id="msg2"></div>
+
+      <div class="success-banner" id="success-banner">
+        <span class="check">✅</span>
+        <h3>🎉 SWAPPING COMPLETED</h3>
+        <div class="final-vals">A = 20 &nbsp;·&nbsp; B = 10</div>
+        <p>✅ Swapping completed successfully — no values were lost!</p>
+      </div>
+    </div>
+    <button class="btn ghost" onclick="resetSection2()">↺ reset section</button>
+  </section>
+
+  <footer>built for learning · drag chips with mouse or touch</footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  const s1 = { A: 10, B: 20 };
+  const s2 = { A: 10, B: 20, TEMP: null };
+  let swapStep = 0;
+  let s1Overwritten = false;
+  const expectedMoves = ["A>TEMP","B>A","TEMP>B"];
+
+  function el(id){ return document.getElementById(id); }
+
+  /* ---------------- chip rendering ---------------- */
+  function chipEl(section, key){
+    return document.querySelector(`.chip[data-section="${section}"][data-key="${key}"]`);
+  }
+  function blockEl(section, key){
+    return document.querySelector(`.mem-block[data-section="${section}"][data-key="${key}"]`);
+  }
+
+  function renderChip(section, key){
+    const state = section === 1 ? s1 : s2;
+    const chip = chipEl(section, key);
+    const val = state[key];
+    if(val === null || val === undefined){
+      chip.textContent = "—";
+      chip.classList.add("empty");
+    } else {
+      chip.textContent = val;
+      chip.classList.remove("empty");
+    }
+    chip.classList.remove("pop");
+    void chip.offsetWidth;
+    chip.classList.add("pop");
+  }
+
+  /* ---------------- fx helpers ---------------- */
+  function ripple(section, key, color){
+    const block = blockEl(section, key);
+    const slot = block.querySelector(".mem-slot");
+    const r = document.createElement("div");
+    r.className = "ripple";
+    r.style.color = color || "var(--cyan)";
+    r.style.left = "50%"; r.style.top = "50%"; r.style.width="0"; r.style.height="0"; r.style.marginLeft="0"; r.style.marginTop="0";
+    slot.appendChild(r);
+    setTimeout(()=> r.remove(), 750);
+  }
+
+  function transientClass(block, cls, duration){
+    block.classList.add(cls);
+    setTimeout(()=> block.classList.remove(cls), duration);
+  }
+
+  function warnBadge(section, key){
+    const block = blockEl(section, key);
+    const badge = document.createElement("div");
+    badge.className = "warn-badge";
+    badge.textContent = "⚠️";
+    block.appendChild(badge);
+    setTimeout(()=> badge.remove(), 900);
+  }
+
+  function showMessage(boxId, text, colorClass){
+    const box = el(boxId);
+    box.classList.remove("show","c-red","c-green","c-blue","c-yellow");
+    void box.offsetWidth;
+    box.textContent = text;
+    box.classList.add("show", colorClass);
+  }
+
+  function clearGlow(section, key){
+    const block = blockEl(section, key);
+    block.classList.remove("glow-blue","glow-cyan","glow-purple","glow-green","flash-red");
+  }
+
+  function glow(section, key, colorClass, duration){
+    const block = blockEl(section, key);
+    clearGlow(section, key);
+    block.classList.add(colorClass);
+    if(duration){ setTimeout(()=> block.classList.remove(colorClass), duration); }
+  }
+
+  /* ---------------- confetti ---------------- */
+  function confettiBurst(){
+    const colors = ["#22d3ee","#a855f7","#22c55e","#3b82f6","#eab308","#ffffff"];
+    for(let i=0;i<70;i++){
+      const p = document.createElement("div");
+      p.className = "confetti-piece";
+      const size = 6 + Math.random()*7;
+      p.style.width = size+"px";
+      p.style.height = (size*0.4 + 4)+"px";
+      p.style.left = Math.random()*100+"vw";
+      p.style.background = colors[Math.floor(Math.random()*colors.length)];
+      const dur = 2.2 + Math.random()*1.6;
+      p.style.animationDuration = dur+"s";
+      p.style.opacity = 0.9;
+      document.body.appendChild(p);
+      setTimeout(()=> p.remove(), dur*1000 + 200);
+    }
+  }
+
+  /* ---------------- drag engine (pointer events) ---------------- */
+  let dragState = null;
+
+  function initDrag(chip){
+    chip.addEventListener("pointerdown", (e)=>{
+      const section = parseInt(chip.dataset.section,10);
+      const key = chip.dataset.key;
+      const state = section === 1 ? s1 : s2;
+      if(state[key] === null || state[key] === undefined) return; // can't drag empty TEMP
+
+      e.preventDefault();
+      const clone = document.createElement("div");
+      clone.className = "chip-clone";
+      clone.textContent = state[key];
+      document.body.appendChild(clone);
+      moveClone(clone, e.clientX, e.clientY);
+
+      dragState = { section, key, clone, lastTrail: 0 };
+      chip.style.opacity = "0.35";
+
+      document.addEventListener("pointermove", onPointerMove);
+      document.addEventListener("pointerup", onPointerUp, { once:true });
+    });
+  }
+
+  function moveClone(clone, x, y){
+    clone.style.left = x + "px";
+    clone.style.top = y + "px";
+  }
+
+  function spawnTrail(x, y){
+    const dot = document.createElement("div");
+    dot.className = "trail-dot";
+    dot.style.left = (x-5) + "px";
+    dot.style.top = (y-5) + "px";
+    document.body.appendChild(dot);
+    setTimeout(()=> dot.remove(), 620);
+  }
+
+  function onPointerMove(e){
+    if(!dragState) return;
+    moveClone(dragState.clone, e.clientX, e.clientY);
+    const now = performance.now();
+    if(now - dragState.lastTrail > 45){
+      spawnTrail(e.clientX, e.clientY);
+      dragState.lastTrail = now;
+    }
+    document.querySelectorAll(".mem-block").forEach(b=> b.classList.remove("drop-hover"));
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    const block = target && target.closest(".mem-block");
+    if(block && parseInt(block.dataset.section,10) === dragState.section && block.dataset.key !== dragState.key){
+      block.classList.add("drop-hover");
+    }
+  }
+
+  function onPointerUp(e){
+    document.removeEventListener("pointermove", onPointerMove);
+    document.querySelectorAll(".mem-block").forEach(b=> b.classList.remove("drop-hover"));
+
+    if(!dragState) return;
+    const { section, key, clone } = dragState;
+    const srcChip = chipEl(section, key);
+    srcChip.style.opacity = "1";
+
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    const block = target && target.closest(".mem-block");
+    clone.remove();
+    dragState = null;
+
+    if(block && parseInt(block.dataset.section,10) === section){
+      const destKey = block.dataset.key;
+      if(destKey !== key){
+        if(section === 1) dropSection1(key, destKey);
+        else dropSection2(key, destKey);
+      }
+    }
+  }
+
+  document.querySelectorAll('[draggable-chip]').forEach(initDrag);
+
+  /* ---------------- section 1 logic ---------------- */
+  function dropSection1(srcKey, destKey){
+    const value = s1[srcKey];
+    const oldValue = s1[destKey];
+    s1[destKey] = value;
+    renderChip(1, destKey);
+    ripple(1, destKey, "var(--red)");
+
+    if(oldValue !== value){
+      glow(1, destKey, "flash-red", 900);
+      warnBadge(1, destKey);
+      showMessage("msg1", `⚠️ ${destKey} was overwritten. The original value ${oldValue} was lost.`, "c-red");
+      if(!s1Overwritten){
+        s1Overwritten = true;
+        el("tip1").classList.add("reveal");
+      }
+    } else {
+      showMessage("msg1", `${destKey} already holds ${value} — nothing changed.`, "c-yellow");
+    }
+  }
+
+  function resetSection1(){
+    s1.A = 10; s1.B = 20;
+    renderChip(1,"A"); renderChip(1,"B");
+    clearGlow(1,"A"); clearGlow(1,"B");
+    el("msg1").classList.remove("show");
+    el("tip1").classList.remove("reveal");
+    s1Overwritten = false;
+  }
+
+  function goToSection2(){
+    document.getElementById("section2").scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+
+  /* ---------------- section 2 logic ---------------- */
+  function updateSteps(){
+    document.querySelectorAll(".step").forEach((stepEl)=>{
+      const idx = parseInt(stepEl.dataset.step,10);
+      stepEl.classList.remove("active","done");
+      if(idx < swapStep) stepEl.classList.add("done");
+      else if(idx === swapStep) stepEl.classList.add("active");
+    });
+  }
+  updateSteps();
+
+  function dropSection2(srcKey, destKey){
+    const value = s2[srcKey];
+    const oldValue = s2[destKey];
+    s2[destKey] = value;
+    renderChip(2, destKey);
+
+    const moveKey = `${srcKey}>${destKey}`;
+    const isExpected = swapStep < 3 && moveKey === expectedMoves[swapStep];
+
+    if(isExpected){
+      const colorClass = swapStep === 2 ? "glow-green" : (swapStep === 0 ? "glow-cyan" : "glow-purple");
+      ripple(2, destKey, swapStep === 2 ? "var(--green)" : (swapStep===0 ? "var(--cyan)" : "var(--purple)"));
+      glow(2, destKey, colorClass, 1300);
+
+      const messages = [
+        `✅ ${value} is safely stored in TEMP.`,
+        `✅ A now contains ${value}. The original ${s2.TEMP} is still safe in TEMP.`,
+        `✅ Swapping completed successfully — no values were lost!`
+      ];
+      showMessage("msg2", messages[swapStep], swapStep === 2 ? "c-green" : "c-blue");
+
+      swapStep++;
+      updateSteps();
+
+      if(swapStep === 3){
+        setTimeout(()=>{
+          glow(2, "A", "glow-green", 2200);
+          glow(2, "B", "glow-green", 2200);
+          el("success-banner").classList.add("reveal");
+          confettiBurst();
+        }, 350);
+      }
+    } else {
+      // generic free-drag feedback for any combination
+      if(oldValue === null || oldValue === undefined){
+        ripple(2, destKey, "var(--cyan)");
+        glow(2, destKey, "glow-cyan", 1000);
+        showMessage("msg2", `📦 ${value} was copied from ${srcKey} into ${destKey}. ${srcKey} still keeps its value.`, "c-blue");
+      } else if(oldValue !== value){
+        ripple(2, destKey, "var(--red)");
+        glow(2, destKey, "flash-red", 900);
+        warnBadge(2, destKey);
+        showMessage("msg2", `⚠️ ${destKey} was overwritten. The original value ${oldValue} was lost.`, "c-red");
+      } else {
+        showMessage("msg2", `${destKey} already holds ${value} — nothing changed.`, "c-yellow");
+      }
+    }
+  }
+
+  function resetSection2(){
+    s2.A = 10; s2.B = 20; s2.TEMP = null;
+    renderChip(2,"A"); renderChip(2,"B"); renderChip(2,"TEMP");
+    clearGlow(2,"A"); clearGlow(2,"B"); clearGlow(2,"TEMP");
+    el("msg2").classList.remove("show");
+    el("success-banner").classList.remove("reveal");
+    swapStep = 0;
+    updateSteps();
+  }
+
+  // expose the few functions used by inline onclick handlers
+  window.goToSection2 = goToSection2;
+  window.resetSection1 = resetSection1;
+  window.resetSection2 = resetSection2;
+})();
+</script>
+</body>
+</html>
