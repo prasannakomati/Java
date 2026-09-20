@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Relational Operators in Java</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -105,6 +105,8 @@
             margin-bottom: 0.5rem;
             position: relative;
             z-index: 2;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .logo-badge {
@@ -124,6 +126,34 @@
             fill: #f89820;
             width: 24px;
             height: 24px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .home-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(5px);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .home-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
         }
 
         .tagline {
@@ -498,7 +528,10 @@
                     <svg viewBox="0 0 24 24"><path d="M0 13.571c0 3.868 4.14 5.929 8.28 5.929 7.02 0 10.35-4.52 9.07-8.31-1.28-3.79-6.41-3.69-6.41-3.69s3.84-1.63 2.1-4.35c-1.74-2.72-5.46.22-5.46.22s1.46-2.5-1.07-3.37c-2.53-.87-4.4 2.1-4.4 2.1s-.4-1.3-2.11-.87c-1.71.43-.87 2.39-.87 2.39S-1 8.871 0 13.571z"/></svg>
                     Java
                 </div>
-                <div class="tagline">Compare Values • Get Result</div>
+                <div class="header-right">
+                    <button class="home-btn" id="homeBtn" title="Go to home page">🏠 Home</button>
+                    <div class="tagline">Compare Values • Get Result</div>
+                </div>
             </div>
             <h1>Relational Operators in Java</h1>
             <p>Relational operators are used to compare two values and return a boolean result (<span>true</span> or <span>false</span>).</p>
@@ -650,6 +683,12 @@
     </div>
 
     <script>
+        // Home button navigation
+        const homeBtn = document.getElementById('homeBtn');
+        homeBtn.addEventListener('click', () => {
+            window.location.href = 'type.html';
+        });
+
         // Interactive Console Toggle
         const runBtn = document.getElementById('runBtn');
         const outputPanel = document.getElementById('outputPanel');
