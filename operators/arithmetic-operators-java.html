@@ -76,6 +76,29 @@
     letter-spacing: 0.5px;
   }
 
+  .home-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+    color: white;
+    border: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: "Segoe UI", Verdana, Arial, sans-serif;
+    margin-top: 6px;
+  }
+
+  .home-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+
   .title-block {
     flex: 1;
     min-width: 280px;
@@ -295,6 +318,7 @@
         <path d="M38 8c-2 3 2 4 0 7" stroke="#ff5b3d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
       </svg>
       <span>Java</span>
+      <button class="home-btn" id="homeBtn" title="Go to home page">🏠 Home</button>
     </div>
 
     <div class="title-block">
@@ -405,6 +429,11 @@
 </div>
 
 <script>
+  // Home button navigation
+  document.getElementById('homeBtn').addEventListener('click', () => {
+    window.location.href = 'type.html';
+  });
+
   // Small interactive touch: click a table row to highlight it, and
   // clicking the code block copies the example code to clipboard.
   document.querySelectorAll('tbody tr').forEach(row => {
