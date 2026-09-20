@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java Operator Explained</title>
+  <!-- Google Fonts for clean tech look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@600;700&family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 10%, #f6fbff 0%, #e2f4ff 50%, #d5effe 100%);
+      --card-bg: #ffffff;
+      --border-dark: #07263b;
+      --cyan-bright: #38e1ff;
+      --cyan-glow: #1bc4eb;
+      --lime-bright: #cbff4d;
+      --lime-dark: #a9e829;
+      --panel-top-grad: linear-gradient(90deg, #13d6ff 0%, #baff39 100%);
+      --accent-badge: linear-gradient(135deg, #7cf0ff 0%, #c8ff4a 100%);
+      --code-font: 'Fira Code', monospace;
+      --ui-font: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      font-family: var(--ui-font);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      color: #0b253a;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Tech Grid Background */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+    }
+
+    /* Outer Container */
+    .infographic-wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      border-radius: 36px;
+      padding: 40px 36px 36px;
+      box-shadow: 0 20px 60px rgba(11, 62, 99, 0.08), 0 2px 10px rgba(0,0,0,0.03);
+    }
+
+    /* Title Block */
+    .header-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header-section h1 {
+      font-size: clamp(1.8rem, 3.8vw, 2.6rem);
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+      color: #0c2638;
+      line-height: 1.15;
+    }
+
+    .header-section p {
+      font-size: clamp(1.1rem, 2.3vw, 1.55rem);
+      font-weight: 700;
+      color: #17374c;
+      margin-top: 6px;
+    }
+
+    /* Main Diagram Visual Area */
+    .diagram-area {
+      position: relative;
+      margin: 20px auto 46px;
+      max-width: 920px;
+    }
+
+    /* The Code Editor Window */
+    .code-window {
+      background: #ffffff;
+      border: 3.5px solid var(--border-dark);
+      border-radius: 20px;
+      box-shadow: 0 10px 0 var(--border-dark), 0 18px 30px rgba(0, 105, 160, 0.15);
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      max-width: 530px;
+      margin: 0 auto;
+    }
+
+    .code-window-header {
+      background: #11bee6;
+      background: linear-gradient(90deg, #17c6ef 0%, #6ce4a4 100%);
+      padding: 10px 16px;
+      display: flex;
+      gap: 7px;
+      border-bottom: 3.5px solid var(--border-dark);
+    }
+
+    .window-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--border-dark);
+      background: #ffffff;
+    }
+
+    .code-body {
+      padding: 34px 24px 38px;
+      text-align: center;
+      font-family: var(--code-font);
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      font-weight: 700;
+      white-space: nowrap;
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .token-keyword { color: #0077b6; }
+    .token-identifier {
+      color: #0b253a;
+      border-bottom: 4px solid #b7f439;
+      border-radius: 6px;
+      padding: 0 4px;
+      display: inline-block;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .token-op-assign { color: #0b253a; margin: 0 4px; }
+    .token-operand-a { color: #0b253a; cursor: pointer; }
+    .token-operator-plus {
+      color: #0077b6;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+    .token-operand-b { color: #0b253a; cursor: pointer; }
+    .token-semi { color: #0b253a; }
+
+    /* Interactive highlights */
+    .token-identifier:hover,
+    .token-operator-plus:hover,
+    .token-operand-a:hover,
+    .token-operand-b:hover {
+      transform: scale(1.18);
+      filter: drop-shadow(0 4px 10px rgba(0, 162, 232, 0.4));
+    }
+
+    /* Badges / Callouts */
+    .callout-badge {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--accent-badge);
+      border: 2.5px solid var(--border-dark);
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      box-shadow: 0 4px 0 var(--border-dark);
+      white-space: nowrap;
+      position: absolute;
+      z-index: 5;
+      user-select: none;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .callout-badge:hover {
+      transform: translateY(-3px) scale(1.04);
+    }
+    .callout-badge .sub {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: none;
+      color: #0a334f;
+    }
+
+    #badge-operator {
+      top: -24px;
+      right: 17%;
+    }
+
+    #badge-result {
+      bottom: -22px;
+      left: 29%;
+    }
+
+    #badge-operands {
+      bottom: -32px;
+      right: 16%;
+    }
+
+    /* Floating Circuit & Tech Deco SVGs */
+    .circuit-underlay {
+      position: absolute;
+      inset: -50px -40px;
+      width: calc(100% + 80px);
+      height: calc(100% + 100px);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .circuit-path {
+      fill: none;
+      stroke: #33bfe8;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .circuit-green {
+      stroke: #a2e825;
+    }
+    .circuit-node {
+      fill: #ffffff;
+      stroke: var(--border-dark);
+      stroke-width: 2.5;
+    }
+
+    /* Bottom 3 Cards Layout */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 22px;
+      position: relative;
+      z-index: 3;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border: 3px solid var(--border-dark);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 6px 0 var(--border-dark);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 0 var(--border-dark);
+    }
+
+    .card-header {
+      background: var(--panel-top-grad);
+      border-bottom: 3px solid var(--border-dark);
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      text-align: center;
+      color: #0b253a;
+    }
+
+    .card-content {
+      padding: 22px 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(180deg, #ffffff 65%, #f1fbff 100%);
+    }
+
+    /* Card 1: Types of Operators */
+    .operators-columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      text-align: center;
+    }
+
+    .op-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .op-buttons-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: #eef8ff;
+      border: 2px solid var(--border-dark);
+      padding: 6px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      width: 100%;
+      max-width: 82px;
+      box-shadow: 0 3px 0 var(--border-dark);
+    }
+
+    .op-key {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1.5px solid var(--border-dark);
+      border-radius: 7px;
+      font-family: var(--code-font);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .op-key:hover {
+      background: #bbf847;
+      transform: translateY(-2px);
+    }
+
+    /* "View All Operators" button */
+    .view-types-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 18px auto 0;
+      padding: 10px 20px;
+      background: var(--accent-badge);
+      border: 2.5px solid var(--border-dark);
+      border-radius: 12px;
+      font-family: var(--ui-font);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #0a334f;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--border-dark);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .view-types-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--border-dark);
+    }
+    .view-types-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--border-dark);
+    }
+
+    .op-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 1.25;
+      color: #0b253a;
+    }
+
+    .op-sublabel {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #55758c;
+      margin-top: 2px;
+    }
+
+    /* Card 2: Operands Can Be... */
+    .operands-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: center;
+      text-align: center;
+    }
+
+    .operand-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .mini-illustration {
+      height: 78px;
+      width: 84px;
+      border: 2.5px solid var(--border-dark);
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 3px 0 var(--border-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .mini-window-bar {
+      width: 100%;
+      background: #f0f7fb;
+      border-bottom: 2px solid var(--border-dark);
+      padding: 3px 6px;
+      display: flex;
+      gap: 4px;
+      border-radius: 9px 9px 0 0;
+    }
+    .mini-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      border: 1px solid var(--border-dark);
+    }
+
+    .literal-val {
+      font-family: var(--code-font);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #07263b;
+      margin-top: 8px;
+    }
+
+    /* Card 3: How It Works */
+    .workflow-flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 4px;
+      padding: 8px 0;
+    }
+
+    .wf-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 78px;
+    }
+
+    .wf-icon-box {
+      width: 56px;
+      height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
+    .wf-gear-spin:hover {
+      animation: spinGear 3s linear infinite;
+    }
+    @keyframes spinGear {
+      100% { transform: rotate(360deg); }
+    }
+
+    .wf-arrow {
+      stroke: var(--border-dark);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .wf-title {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+    .wf-subtitle {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #55758c;
+    }
+
+    /* Toast Notification */
+    .interactive-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #07263b;
+      color: #ffffff;
+      padding: 10px 22px;
+      border-radius: 50px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1.5px solid #38e1ff;
+    }
+    .interactive-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Responsive scaling */
+    @media (max-width: 820px) {
+      .diagram-area {
+        margin-bottom: 25px;
+      }
+      .callout-badge {
+        position: static;
+        margin: 6px;
+      }
+      .badge-mobile-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 15px;
+      }
+      .circuit-underlay {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Tech Nodes Background Pattern -->
+  <canvas class="bg-canvas" id="gridCanvas"></canvas>
+
+  <main class="infographic-wrapper">
+    <!-- Header -->
+    <header class="header-section">
+      <h1>JAVA OPERATOR EXPLAINED:</h1>
+      <p>a special symbol for operations</p>
+    </header>
+
+    <!-- Center Interactive Visual -->
+    <div class="diagram-area">
+      <!-- Circuit Graphics SVG Behind Window -->
+      <svg class="circuit-underlay" viewBox="0 0 1000 360" preserveAspectRatio="none">
+        <!-- Floating Deco: Left side terminal & gear -->
+        <g transform="translate(60, 40)">
+          <!-- Mini code bracket tag -->
+          <rect x="0" y="0" width="46" height="38" rx="8" fill="#fff" stroke="#07263b" stroke-width="2.5" />
+          <text x="9" y="25" font-family="'Fira Code', monospace" font-size="16" font-weight="bold" fill="#07263b">&lt;/&gt;</text>
+          
+          <!-- Lightbulb mini -->
+          <circle cx="-16" cy="14" r="10" fill="#fff868" stroke="#07263b" stroke-width="2" />
+        </g>
+
+        <!-- Left Mini Window with Code -->
+        <g transform="translate(70, 110)">
+          <rect width="64" height="52" rx="7" fill="#0b2c45" stroke="#07263b" stroke-width="2.5" />
+          <line x1="8" y1="14" x2="40" y2="14" stroke="#38e1ff" stroke-width="3" stroke-linecap="round" />
+          <line x1="8" y1="24" x2="52" y2="24" stroke="#a6ff38" stroke-width="3" stroke-linecap="round" />
+          <line x1="8" y1="34" x2="32" y2="34" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
+        </g>
+
+        <!-- Circuit Traces Connecting Left -->
+        <path class="circuit-path" d="M140, 136 L240, 136 L240, 190 L260, 190" />
+        <circle class="circuit-node" cx="240" cy="190" r="4.5" />
+        <path class="circuit-path circuit-green" d="M110, 170 L110, 240 L280, 240 L280, 260" />
+        
+        <!-- Circuit Traces Connecting to Cards -->
+        <path class="circuit-path" d="M480, 260 L480, 340 L220, 340 L220, 370" />
+        <path class="circuit-path circuit-green" d="M500, 260 L500, 340 L500, 370" />
+        <path class="circuit-path" d="M520, 260 L520, 340 L780, 340 L780, 370" />
+
+        <!-- Right Side Tech deco -->
+        <g transform="translate(860, 80)">
+          <rect width="64" height="52" rx="7" fill="#0b2c45" stroke="#07263b" stroke-width="2.5" />
+          <line x1="8" y1="14" x2="48" y2="14" stroke="#a6ff38" stroke-width="3" stroke-linecap="round" />
+          <line x1="8" y1="24" x2="36" y2="24" stroke="#38e1ff" stroke-width="3" stroke-linecap="round" />
+          <line x1="8" y1="34" x2="54" y2="34" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
+        </g>
+        
+        <!-- Circuit Traces Right Side -->
+        <path class="circuit-path" d="M860, 106 L760, 106 L760, 150 L740, 150" />
+        <circle class="circuit-node" cx="760" cy="106" r="4.5" />
+
+        <!-- Floating Java Cup Logo Impression -->
+        <g transform="translate(895, 205)">
+          <path d="M10,22 C22,22 28,18 28,12 L6,12 C6,18 10,22 10,22 Z" fill="#ffffff" stroke="#07263b" stroke-width="2.5" />
+          <path d="M12,4 Q14,-2 18,2" stroke="#ea580c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+          <path d="M18,3 Q20,-3 24,1" stroke="#ea580c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+        </g>
+
+        <!-- Dynamic Curved Arrow to OPERATOR (The symbol) -->
+        <path d="M685, 20 C640, 20 635, 75 635, 95" fill="none" stroke="#1bc4eb" stroke-width="3.5" stroke-linecap="round" />
+        <polygon points="630,90 635,105 640,90" fill="#1bc4eb" />
+
+        <!-- Dynamic Curved Arrow to RESULT -->
+        <path d="M430, 220 C430, 200 430, 175 430, 155" fill="none" stroke="#87df00" stroke-width="3.5" stroke-linecap="round" />
+        <polygon points="425,160 430,145 435,160" fill="#87df00" />
+
+        <!-- Dynamic Curved Arrow to OPERANDS -->
+        <path d="M690, 215 C690, 185 690, 160 690, 155" fill="none" stroke="#87df00" stroke-width="3.5" stroke-linecap="round" />
+        <polygon points="685,160 690,145 695,160" fill="#87df00" />
+
+        <!-- Curve from Operands to 'a' -->
+        <path d="M650, 215 C650, 175 585, 175 585, 155" fill="none" stroke="#1bc4eb" stroke-width="3.5" stroke-linecap="round" />
+        <polygon points="580,160 585,145 590,160" fill="#1bc4eb" />
+      </svg>
+
+      <!-- Center Code Box -->
+      <div class="code-window">
+        <div class="code-window-header">
+          <div class="window-dot"></div>
+          <div class="window-dot"></div>
+          <div class="window-dot"></div>
+        </div>
+        <div class="code-body">
+          <span class="token-keyword">int</span>
+          <span class="token-identifier" onclick="triggerInfo('result')">sum</span>
+          <span class="token-op-assign">=</span>
+          <span class="token-operand-a" onclick="triggerInfo('operand')">a</span>
+          <span class="token-operator-plus" onclick="triggerInfo('operator')">+</span>
+          <span class="token-operand-b" onclick="triggerInfo('operand')">b</span><span class="token-semi">;</span>
+        </div>
+      </div>
+
+      <!-- Callout Badges with Descriptors -->
+      <div class="callout-badge" id="badge-operator" onclick="triggerInfo('operator')">
+        OPERATOR
+        <span class="sub">(The symbol)</span>
+      </div>
+
+      <div class="callout-badge" id="badge-result" onclick="triggerInfo('result')">
+        RESULT
+      </div>
+
+      <div class="callout-badge" id="badge-operands" onclick="triggerInfo('operand')">
+        OPERANDS
+        <span class="sub">(The data elements)</span>
+      </div>
+    </div>
+
+    <!-- 3 Bottom Columns (Types, Operands, How It Works) -->
+    <section class="cards-grid">
+      
+      <!-- Card 1: Types of Operators -->
+      <article class="feature-card">
+        <div class="card-header">Types of Operators</div>
+        <div class="card-content">
+          <div class="operators-columns">
+            
+            <!-- Mathematical -->
+            <div class="op-col">
+              <div class="op-buttons-box">
+                <div class="op-key" onclick="runDemo('+')">+</div>
+                <div class="op-key" onclick="runDemo('-')">-</div>
+                <div class="op-key" onclick="runDemo('/')">/</div>
+                <div class="op-key" onclick="runDemo('%')">%</div>
+              </div>
+              <div class="op-label">MATHEMATICAL</div>
+              <div class="op-sublabel">e.g.</div>
+            </div>
+
+            <!-- Logical -->
+            <div class="op-col">
+              <div class="op-buttons-box">
+                <div class="op-key" style="grid-column: span 2;" onclick="runDemo('&&')">&amp;&amp;</div>
+                <div class="op-key" onclick="runDemo('||')">||</div>
+                <div class="op-key" onclick="runDemo('!')">!</div>
+              </div>
+              <div class="op-label">LOGICAL</div>
+              <div class="op-sublabel">e.g.</div>
+            </div>
+
+            <!-- Relational -->
+            <div class="op-col">
+              <div class="op-buttons-box">
+                <div class="op-key" onclick="runDemo('>')">&gt;</div>
+                <div class="op-key" onclick="runDemo('<')">&lt;</div>
+                <div class="op-key" onclick="runDemo('==')">==</div>
+                <div class="op-key" onclick="runDemo('!=')">!=</div>
+              </div>
+              <div class="op-label">RELATIONAL</div>
+              <div class="op-sublabel">e.g.</div>
+            </div>
+
+          </div>
+
+          <a href="type.html" class="view-types-btn">Explore All Operators →</a>
+        </div>
+      </article>
+
+      <!-- Card 2: Operands Can Be... -->
+      <article class="feature-card">
+        <div class="card-header">Operands Can Be...</div>
+        <div class="card-content">
+          <div class="operands-row">
+            
+            <!-- Variables -->
+            <div class="operand-unit" onclick="triggerInfo('var')">
+              <div class="mini-illustration" style="cursor: pointer;">
+                <!-- Notepad & Pencil Icon -->
+                <svg width="42" height="42" viewBox="0 0 44 44" fill="none">
+                  <rect x="4" y="4" width="30" height="36" rx="4" fill="#f0fbff" stroke="#07263b" stroke-width="2.5" />
+                  <line x1="10" y1="12" x2="24" y2="12" stroke="#25b7ea" stroke-width="2.5" stroke-linecap="round" />
+                  <line x1="10" y1="18" x2="26" y2="18" stroke="#25b7ea" stroke-width="2.5" stroke-linecap="round" />
+                  <line x1="10" y1="24" x2="18" y2="24" stroke="#25b7ea" stroke-width="2.5" stroke-linecap="round" />
+                  <g transform="translate(14, 12) rotate(25)">
+                    <rect x="4" y="4" width="8" height="24" rx="2" fill="#ffd13b" stroke="#07263b" stroke-width="2" />
+                    <polygon points="4,28 12,28 8,34" fill="#07263b" />
+                  </g>
+                </svg>
+              </div>
+              <div class="op-label">VARIABLES</div>
+              <div class="op-sublabel">(e.g., count)</div>
+            </div>
+
+            <!-- Values / Literals -->
+            <div class="operand-unit" onclick="triggerInfo('val')">
+              <div class="mini-illustration" style="cursor: pointer;">
+                <div class="mini-window-bar">
+                  <div class="mini-dot"></div>
+                  <div class="mini-dot"></div>
+                  <div class="mini-dot"></div>
+                </div>
+                <div class="literal-val">10.5</div>
+              </div>
+              <div class="op-label">VALUES / LITERALS</div>
+              <div class="op-sublabel">(e.g., 5, 10.5)</div>
+            </div>
+
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 3: How It Works -->
+      <article class="feature-card">
+        <div class="card-header">How It Works</div>
+        <div class="card-content">
+          <div class="workflow-flow">
+            
+            <!-- Step 1: Input -->
+            <div class="wf-step">
+              <div class="wf-icon-box">
+                <svg width="42" height="52" viewBox="0 0 36 46" fill="none">
+                  <rect x="2" y="2" width="32" height="42" rx="4" fill="#f0fbff" stroke="#07263b" stroke-width="2.5" />
+                  <line x1="8" y1="12" x2="28" y2="12" stroke="#26b7ea" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="8" y1="18" x2="28" y2="18" stroke="#26b7ea" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="8" y1="24" x2="24" y2="24" stroke="#26b7ea" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="8" y1="30" x2="20" y2="30" stroke="#26b7ea" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="wf-title">Input</div>
+              <div class="wf-subtitle">Operands</div>
+            </div>
+
+            <!-- Arrow -->
+            <svg width="22" height="18" viewBox="0 0 24 16">
+              <path class="wf-arrow" d="M2,8 L18,8 M12,2 L18,8 L12,14" />
+            </svg>
+
+            <!-- Step 2: Process Gear -->
+            <div class="wf-step">
+              <div class="wf-icon-box">
+                <svg class="wf-gear-spin" width="46" height="46" viewBox="0 0 46 46" fill="none" style="cursor: pointer;">
+                  <path d="M23,15 A8,8 0 1,0 23,31 A8,8 0 1,0 23,15 Z" fill="#c3ff41" stroke="#07263b" stroke-width="2.5"/>
+                  <path d="M20,4 L26,4 L25,9 L21,9 Z M20,37 L26,37 L25,42 L21,42 Z M4,20 L4,26 L9,25 L9,21 Z M37,20 L37,26 L42,25 L42,21 Z M9.5,8 L13.5,4 L17,8 L13,12 Z M32.5,38 L36.5,34 L40,38 L36,42 Z M8,32.5 L4,36.5 L8,40 L12,36 Z M38,9.5 L34,13.5 L38,17 L42,13 Z" fill="#28c4ea" stroke="#07263b" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="wf-title">Operator</div>
+              <div class="wf-subtitle">Process</div>
+            </div>
+
+            <!-- Arrow -->
+            <svg width="22" height="18" viewBox="0 0 24 16">
+              <path class="wf-arrow" d="M2,8 L18,8 M12,2 L18,8 L12,14" />
+            </svg>
+
+            <!-- Step 3: Result -->
+            <div class="wf-step">
+              <div class="wf-icon-box">
+                <svg width="42" height="52" viewBox="0 0 36 46" fill="none">
+                  <rect x="2" y="2" width="32" height="42" rx="4" fill="#f7ffea" stroke="#07263b" stroke-width="2.5" />
+                  <line x1="8" y1="12" x2="28" y2="12" stroke="#8fd81b" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="8" y1="18" x2="28" y2="18" stroke="#8fd81b" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="8" y1="24" x2="28" y2="24" stroke="#8fd81b" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="8" y1="30" x2="22" y2="30" stroke="#8fd81b" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="wf-title">Output</div>
+              <div class="wf-subtitle">Result</div>
+            </div>
+
+          </div>
+        </div>
+      </article>
+
+    </section>
+  </main>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="interactive-toast">⚡ Click any symbol or operator to test!</div>
+
+  <!-- JavaScript for Background Tech Grid & Interactive Previews -->
+  <script>
+    // 1. Subtle Animated Canvas Background (Tech Grid Lines)
+    const canvas = document.getElementById('gridCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      drawGrid();
+    }
+
+    function drawGrid() {
+      ctx.clearRect(0, 0, width, height);
+      ctx.strokeStyle = '#27b7ea';
+      ctx.lineWidth = 0.6;
+      const step = 42;
+
+      // Draw subtle connecting node dots
+      for (let x = 0; x < width; x += step) {
+        for (let y = 0; y < height; y += step) {
+          if ((x + y) % (step * 2) === 0) {
+            ctx.beginPath();
+            ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+            ctx.fillStyle = '#1798c7';
+            ctx.fill();
+          }
+        }
+      }
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // 2. Interactive Toast Helpers
+    let toastTimeout;
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.innerHTML = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3400);
+    }
+
+    function triggerInfo(type) {
+      switch(type) {
+        case 'operator':
+          showToast('⚡ <b>+ (Operator)</b>: Tells the Java compiler to calculate addition!');
+          break;
+        case 'operand':
+          showToast('📦 <b>a, b (Operands)</b>: Data values or variables operated upon.');
+          break;
+        case 'result':
+          showToast('🎯 <b>sum (Result)</b>: Holds the computed output of the expression.');
+          break;
+        case 'var':
+          showToast('📝 <b>Variables</b>: Named storage locations holding values like <code>int count = 10;</code>');
+          break;
+        case 'val':
+          showToast('🔢 <b>Literals</b>: Direct constant values in code like <code>10.5</code> or <code>100</code>.');
+          break;
+      }
+    }
+
+    function runDemo(op) {
+      const sampleA = 10;
+      const sampleB = 5;
+      let expr = '';
+      let res = '';
+
+      switch(op) {
+        case '+': expr = `${sampleA} + ${sampleB}`; res = sampleA + sampleB; break;
+        case '-': expr = `${sampleA} - ${sampleB}`; res = sampleA - sampleB; break;
+        case '/': expr = `${sampleA} / ${sampleB}`; res = sampleA / sampleB; break;
+        case '%': expr = `${sampleA} % ${sampleB}`; res = sampleA % sampleB; break;
+        case '&&': expr = `true && false`; res = false; break;
+        case '||': expr = `true || false`; res = true; break;
+        case '!': expr = `!true`; res = false; break;
+        case '>': expr = `${sampleA} > ${sampleB}`; res = sampleA > sampleB; break;
+        case '<': expr = `${sampleA} < ${sampleB}`; res = sampleA < sampleB; break;
+        case '==': expr = `${sampleA} == ${sampleB}`; res = sampleA === sampleB; break;
+        case '!=': expr = `${sampleA} != ${sampleB}`; res = sampleA !== sampleB; break;
+      }
+      showToast(`Evaluation: <b>${expr}</b> &nbsp;➔&nbsp; <b style="color:#b8ff34">${res}</b>`);
+    }
+  </script>
+</body>
+</html>

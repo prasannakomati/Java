@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arithmetic Operators in Java</title>
+<style>
+  :root {
+    --navy: #0d2b52;
+    --blue-light: #4fb3e8;
+    --bg: #eef3fb;
+    --header-blue: #d7e9fb;
+    --header-green: #d9f0da;
+    --header-purple: #e3dcf7;
+    --header-yellow: #fdf1c8;
+    --header-pink: #fbdbe3;
+    --row-blue: #eef6fd;
+    --row-green: #f0f8f0;
+    --row-purple: #f2effb;
+    --row-yellow: #fdf8e8;
+    --row-pink: #fdedf1;
+    --code-bg: #0f1b33;
+    --key-bg: #dcedfc;
+    --tip-bg: #ddf3e0;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Verdana, Arial, sans-serif;
+    background: var(--bg);
+    color: #1c2b3a;
+    display: flex;
+    justify-content: center;
+    padding: 24px 12px;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 1200px;
+    background: var(--bg);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(13, 43, 82, 0.12);
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0d2b52, #123a6b);
+    color: white;
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .logo-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 110px;
+  }
+
+  .coffee-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .logo-block span {
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+  }
+
+  .title-block {
+    flex: 1;
+    min-width: 280px;
+  }
+
+  .title-block h1 {
+    margin: 0 0 10px;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+  }
+
+  .title-block h1 .accent {
+    color: var(--blue-light);
+  }
+
+  .title-block p {
+    margin: 0;
+    font-size: clamp(0.85rem, 1.6vw, 1.05rem);
+    color: #dce8f7;
+    max-width: 700px;
+    line-height: 1.5;
+  }
+
+  .note {
+    font-family: "Comic Sans MS", "Segoe Print", cursive;
+    color: var(--blue-light);
+    text-align: right;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    position: relative;
+  }
+
+  .note svg {
+    display: block;
+    margin-top: 4px;
+    margin-left: auto;
+  }
+
+  /* TABLE */
+  .table-wrap {
+    margin: 26px 30px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(13, 43, 82, 0.08);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+  }
+
+  thead th {
+    padding: 18px 16px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--navy);
+    text-align: left;
+  }
+
+  thead th:nth-child(1) { background: var(--header-blue); text-align: center; }
+  thead th:nth-child(2) { background: var(--header-green); }
+  thead th:nth-child(3) { background: var(--header-purple); }
+  thead th:nth-child(4) { background: var(--header-yellow); }
+  thead th:nth-child(5) { background: var(--header-pink); text-align: center; }
+
+  tbody td {
+    padding: 16px;
+    font-size: 1rem;
+    border-top: 1px solid #eef1f6;
+    vertical-align: middle;
+  }
+
+  tbody td:nth-child(1) { background: var(--row-blue); text-align: center; font-weight: 700; font-size: 1.4rem; color: var(--navy); }
+  tbody td:nth-child(2) { background: var(--row-green); font-weight: 700; color: var(--navy); }
+  tbody td:nth-child(3) { background: var(--row-purple); color: #2b3648; }
+  tbody td:nth-child(4) { background: var(--row-yellow); }
+  tbody td:nth-child(5) { background: var(--row-pink); text-align: center; font-weight: 700; color: var(--navy); }
+
+  .example-pill {
+    display: inline-block;
+    background: var(--key-bg);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 0.95rem;
+    color: var(--navy);
+  }
+
+  /* BOTTOM GRID */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+    margin: 0 30px 30px;
+  }
+
+  @media (max-width: 800px) {
+    .bottom-grid { grid-template-columns: 1fr; }
+    header { padding: 24px 20px; }
+    .table-wrap { margin: 20px 16px; }
+    .bottom-grid { margin: 0 16px 20px; }
+    table, thead, tbody, th, td, tr { font-size: 0.85rem; }
+  }
+
+  /* CODE CARD */
+  .code-card {
+    background: var(--code-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(13, 43, 82, 0.15);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .code-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #101f3a;
+  }
+
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.red { background: #ff5f57; }
+  .dot.yellow { background: #febc2e; }
+  .dot.green { background: #28c840; }
+
+  .code-titlebar h3 {
+    margin: 0 0 0 8px;
+    color: white;
+    font-size: 1.05rem;
+  }
+
+  pre.code {
+    margin: 0;
+    padding: 18px 20px;
+    color: #c9d6ea;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 0.85rem;
+    line-height: 1.65;
+    overflow-x: auto;
+  }
+
+  .kw { color: #c792ea; }
+  .type { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .cmt { color: #6b7c93; }
+  .fn { color: #82aaff; }
+  .num { color: #f78c6c; }
+
+  /* SIDEBAR CARDS */
+  .side-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .card {
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+
+  .card.key-points { background: var(--key-bg); }
+  .card.quick-tip { background: var(--tip-bg); }
+
+  .card h3 {
+    margin: 0 0 14px;
+    font-size: 1.25rem;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card ul {
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card ul li {
+    color: #24344a;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .card p {
+    margin: 0;
+    color: #24344a;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .handwritten {
+    display: block;
+    margin-top: 12px;
+    text-align: right;
+    font-family: "Comic Sans MS", "Segoe Print", cursive;
+    color: #2f9e52;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="logo-block">
+      <svg class="coffee-icon" viewBox="0 0 64 64" fill="none">
+        <path d="M14 26h30a4 4 0 0 1 4 4v6c0 10-8 18-19 18S10 46 10 36v-6a4 4 0 0 1 4-4z" fill="#ffffff"/>
+        <path d="M46 28h4a6 6 0 0 1 0 12h-3" stroke="#ffffff" stroke-width="3" fill="none"/>
+        <path d="M22 8c-2 3 2 4 0 7" stroke="#ff5b3d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M30 8c-2 3 2 4 0 7" stroke="#ff5b3d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M38 8c-2 3 2 4 0 7" stroke="#ff5b3d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span>Java</span>
+    </div>
+
+    <div class="title-block">
+      <h1>Arithmetic Operators <span class="accent">in Java</span></h1>
+      <p>Arithmetic operators are used to perform basic mathematical operations like addition, subtraction, multiplication, division, etc.</p>
+    </div>
+
+    <div class="note">
+      Simple<br>Math<br>in Java
+      <svg width="90" height="14" viewBox="0 0 90 14">
+        <path d="M2 8 Q 45 -4 88 8" stroke="#4fb3e8" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+  </header>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Operator</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Example</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>+</td>
+          <td>Addition</td>
+          <td>Adds two values.</td>
+          <td><span class="example-pill">5 + 3</span></td>
+          <td>8</td>
+        </tr>
+        <tr>
+          <td>−</td>
+          <td>Subtraction</td>
+          <td>Subtracts the right value from the left value.</td>
+          <td><span class="example-pill">10 - 4</span></td>
+          <td>6</td>
+        </tr>
+        <tr>
+          <td>*</td>
+          <td>Multiplication</td>
+          <td>Multiplies two values.</td>
+          <td><span class="example-pill">6 * 7</span></td>
+          <td>42</td>
+        </tr>
+        <tr>
+          <td>/</td>
+          <td>Division</td>
+          <td>Divides the left value by the right value.</td>
+          <td><span class="example-pill">15 / 3</span></td>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td>%</td>
+          <td>Modulus (Remainder)</td>
+          <td>Returns the remainder of the division.</td>
+          <td><span class="example-pill">10 % 3</span></td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bottom-grid">
+    <div class="code-card">
+      <div class="code-titlebar">
+        <div class="dot red"></div>
+        <div class="dot yellow"></div>
+        <div class="dot green"></div>
+        <h3>Example in Java</h3>
+      </div>
+      <pre class="code" id="codeBlock"><span class="kw">public</span> <span class="kw">class</span> <span class="fn">ArithmeticExample</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> <span class="fn">main</span>(<span class="type">String</span>[] args) {
+        <span class="type">int</span> a = <span class="num">10</span>;
+        <span class="type">int</span> b = <span class="num">3</span>;
+
+        System.out.println(<span class="str">"Addition: "</span> + (a + b));       <span class="cmt">// 13</span>
+        System.out.println(<span class="str">"Subtraction: "</span> + (a - b));    <span class="cmt">// 7</span>
+        System.out.println(<span class="str">"Multiplication: "</span> + (a * b)); <span class="cmt">// 30</span>
+        System.out.println(<span class="str">"Division: "</span> + (a / b));       <span class="cmt">// 3</span>
+        System.out.println(<span class="str">"Modulus: "</span> + (a % b));        <span class="cmt">// 1</span>
+    }
+}</pre>
+    </div>
+
+    <div class="side-cards">
+      <div class="card key-points">
+        <h3>💡 Key Points</h3>
+        <ul>
+          <li>All arithmetic operators work with numbers (int, float, double, etc.).</li>
+          <li>Division with integers gives an integer result (e.g., 5 / 2 = 2).</li>
+          <li>To get a decimal result, use a floating-point value (e.g., 5.0 / 2 = 2.5).</li>
+          <li>The % operator gives the remainder.</li>
+        </ul>
+      </div>
+
+      <div class="card quick-tip">
+        <h3>✅ Quick Tip</h3>
+        <p>You can use these operators in expressions, assignments and within conditions (like if, while, for).</p>
+        <span class="handwritten">Practice makes perfect!</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Small interactive touch: click a table row to highlight it, and
+  // clicking the code block copies the example code to clipboard.
+  document.querySelectorAll('tbody tr').forEach(row => {
+    row.addEventListener('click', () => {
+      document.querySelectorAll('tbody tr').forEach(r => r.style.outline = 'none');
+      row.style.outline = '2px solid #4fb3e8';
+      row.style.outlineOffset = '-2px';
+    });
+  });
+
+  const codeBlock = document.getElementById('codeBlock');
+  codeBlock.style.cursor = 'pointer';
+  codeBlock.title = 'Click to copy code';
+  codeBlock.addEventListener('click', () => {
+    const text = codeBlock.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const original = codeBlock.style.boxShadow;
+      codeBlock.style.boxShadow = '0 0 0 2px #28c840 inset';
+      setTimeout(() => { codeBlock.style.boxShadow = original; }, 500);
+    }).catch(() => {});
+  });
+</script>
+
+</body>
+</html>

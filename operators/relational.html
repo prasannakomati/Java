@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relational Operators in Java</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --header-bg: #00bcd4;
+            --header-dark: #00acc1;
+            --accent-blue: #0284c7;
+            --code-bg: #0f172a;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0d1527;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Particles */
+        .bg-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 188, 212, 0.15) 0%, rgba(30, 27, 75, 0) 70%);
+            z-index: 0;
+            pointer-events: none;
+            animation: pulse 8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Styling */
+        .header {
+            background: linear-gradient(135deg, #00d2ff 0%, #0083b0 100%);
+            color: white;
+            padding: 2.5rem 2rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .logo-badge svg {
+            fill: #f89820;
+            width: 24px;
+            height: 24px;
+        }
+
+        .tagline {
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            font-weight: 500;
+            opacity: 0.95;
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .header p span {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        /* Content Body */
+        .content {
+            padding: 2rem;
+        }
+
+        /* Table Styling */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            background: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 1.1rem 1rem;
+            border-bottom: 2px solid #bae6fd;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        tr {
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+            transform: scale(1.005);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .op-badge {
+            display: inline-block;
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Operator Badge Colors */
+        .op-eq { background: #e0f7fa; color: #00838f; }
+        .op-neq { background: #f3e5f5; color: #7b1fa2; }
+        .op-gt { background: #fff8e1; color: #f57f17; }
+        .op-lt { background: #fce4ec; color: #c2185b; }
+        .op-gte { background: #e8f5e9; color: #2e7d32; }
+        .op-lte { background: #ede7f6; color: #512da8; }
+
+        .name-cell {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .desc-cell {
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .example-box {
+            font-family: 'Fira Code', monospace;
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 0.95rem;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .res-badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #15803d;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Bottom Grid Section */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 850px) {
+            .bottom-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Code Card */
+        .code-card {
+            background: var(--code-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-header {
+            background: #1e293b;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .mac-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+
+        .code-title {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .interactive-btn {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .interactive-btn:hover {
+            background: #0369a1;
+            transform: translateY(-1px);
+        }
+
+        .code-body {
+            padding: 1.2rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+            overflow-x: auto;
+            flex-grow: 1;
+        }
+
+        .kw { color: #f472b6; font-weight: 600; } /* Keyword */
+        .cls { color: #38bdf8; font-weight: 600; } /* Class */
+        .type { color: #a78bfa; } /* Type */
+        .num { color: #fbbf24; } /* Number */
+        .str { color: #4ade80; } /* String */
+        .cmnt { color: #64748b; font-style: italic; } /* Comment */
+        .op { color: #f43f5e; font-weight: bold; }
+
+        /* Right Column Cards */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 1rem;
+        }
+
+        .card-title-icon {
+            width: 28px;
+            height: 28px;
+            background: #0284c7;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .points-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .points-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.92rem;
+            color: #334155;
+            line-height: 1.4;
+        }
+
+        .check-icon {
+            color: #16a34a;
+            font-weight: bold;
+            background: #dcfce7;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Quick Tip Card */
+        .tip-card {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            position: relative;
+        }
+
+        .tip-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #15803d;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tip-content {
+            font-size: 0.88rem;
+            color: #166534;
+            line-height: 1.4;
+            margin-bottom: 0.8rem;
+        }
+
+        .flow-banner {
+            background: rgba(22, 163, 74, 0.1);
+            border: 1px dashed #4ade80;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #15803d;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        /* Interactive Output Overlay */
+        .output-panel {
+            margin-top: 10px;
+            background: #050b14;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #4ade80;
+            display: none;
+            border: 1px solid #1e293b;
+        }
+
+        .output-panel.active {
+            display: block;
+            animation: expand 0.3s ease-out;
+        }
+
+        @keyframes expand {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 200px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-top">
+                <div class="logo-badge">
+                    <svg viewBox="0 0 24 24"><path d="M0 13.571c0 3.868 4.14 5.929 8.28 5.929 7.02 0 10.35-4.52 9.07-8.31-1.28-3.79-6.41-3.69-6.41-3.69s3.84-1.63 2.1-4.35c-1.74-2.72-5.46.22-5.46.22s1.46-2.5-1.07-3.37c-2.53-.87-4.4 2.1-4.4 2.1s-.4-1.3-2.11-.87c-1.71.43-.87 2.39-.87 2.39S-1 8.871 0 13.571z"/></svg>
+                    Java
+                </div>
+                <div class="tagline">Compare Values • Get Result</div>
+            </div>
+            <h1>Relational Operators in Java</h1>
+            <p>Relational operators are used to compare two values and return a boolean result (<span>true</span> or <span>false</span>).</p>
+        </header>
+
+        <!-- Main Content Section -->
+        <main class="content">
+            <!-- Operator Table -->
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Operator</th>
+                            <th style="width: 25%;">Name</th>
+                            <th style="width: 35%;">Description</th>
+                            <th style="width: 15%;">Example</th>
+                            <th style="width: 10%;">Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="op-badge op-eq">==</span></td>
+                            <td class="name-cell">Equal to</td>
+                            <td class="desc-cell">Checks if the left value is equal to the right value.</td>
+                            <td><span class="example-box">5 == 5</span></td>
+                            <td><span class="res-badge">true</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="op-badge op-neq">!=</span></td>
+                            <td class="name-cell">Not equal to</td>
+                            <td class="desc-cell">Checks if the left value is not equal to the right value.</td>
+                            <td><span class="example-box">5 != 3</span></td>
+                            <td><span class="res-badge">true</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="op-badge op-gt">&gt;</span></td>
+                            <td class="name-cell">Greater than</td>
+                            <td class="desc-cell">Checks if the left value is greater than the right value.</td>
+                            <td><span class="example-box">10 &gt; 5</span></td>
+                            <td><span class="res-badge">true</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="op-badge op-lt">&lt;</span></td>
+                            <td class="name-cell">Less than</td>
+                            <td class="desc-cell">Checks if the left value is less than the right value.</td>
+                            <td><span class="example-box">3 &lt; 7</span></td>
+                            <td><span class="res-badge">true</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="op-badge op-gte">&gt;=</span></td>
+                            <td class="name-cell">Greater than or equal to</td>
+                            <td class="desc-cell">Checks if the left value is greater than or equal to the right value.</td>
+                            <td><span class="example-box">5 &gt;= 5</span></td>
+                            <td><span class="res-badge">true</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="op-badge op-lte">&lt;=</span></td>
+                            <td class="name-cell">Less than or equal to</td>
+                            <td class="desc-cell">Checks if the left value is less than or equal to the right value.</td>
+                            <td><span class="example-box">4 &lt;= 7</span></td>
+                            <td><span class="res-badge">true</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Bottom Section (Code + Key Points) -->
+            <div class="bottom-grid">
+                <!-- Code Card -->
+                <div class="code-card">
+                    <div class="code-header">
+                        <div class="mac-dots">
+                            <span class="dot dot-red"></span>
+                            <span class="dot dot-yellow"></span>
+                            <span class="dot dot-green"></span>
+                        </div>
+                        <div class="code-title">Example in Java &lt;/&gt;</div>
+                        <button class="interactive-btn" id="runBtn">▶ Run Code</button>
+                    </div>
+                    <div class="code-body">
+                        <span class="kw">package</span> com.example.practice;<br><br>
+                        <span class="kw">public class</span> <span class="cls">RelationalOperators</span> {<br>
+                        &nbsp;&nbsp;<span class="kw">public static void</span> main(<span class="cls">String</span>[] args) {<br><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">int</span> a = <span class="num">10</span>;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">int</span> b = <span class="num">5</span>;<br><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cls">System</span>.out.println(<span class="str">"a == b : "</span> + (a <span class="op">==</span> b)); &nbsp;<span class="cmnt">// false</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cls">System</span>.out.println(<span class="str">"a != b : "</span> + (a <span class="op">!=</span> b)); &nbsp;<span class="cmnt">// true</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cls">System</span>.out.println(<span class="str">"a &gt; b  : "</span> + (a <span class="op">&gt;</span> b)); &nbsp;<span class="cmnt">// true</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cls">System</span>.out.println(<span class="str">"a &lt; b  : "</span> + (a <span class="op">&lt;</span> b)); &nbsp;<span class="cmnt">// false</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cls">System</span>.out.println(<span class="str">"a &gt;= b : "</span> + (a <span class="op">&gt;=</span> b)); &nbsp;<span class="cmnt">// true</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cls">System</span>.out.println(<span class="str">"a &lt;= b : "</span> + (a <span class="op">&lt;=</span> b)); &nbsp;<span class="cmnt">// false</span><br>
+                        &nbsp;&nbsp;}<br>
+                        }
+                    </div>
+                    <div class="output-panel" id="outputPanel">
+                        <div><strong>Execution Console Output:</strong></div>
+                        <div style="color: #94a3b8; margin-top: 5px;">
+                            a == b : false<br>
+                            a != b : true<br>
+                            a > b  : true<br>
+                            a < b  : false<br>
+                            a >= b : true<br>
+                            a <= b : false
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column (Key Points & Tip) -->
+                <div class="right-col">
+                    <div class="info-card">
+                        <div class="card-title">
+                            <div class="card-title-icon">💡</div>
+                            Key Points
+                        </div>
+                        <ul class="points-list">
+                            <li>
+                                <span class="check-icon">✓</span>
+                                <span>Relational operators return a boolean value (<strong style="color: #16a34a;">true</strong> or <strong style="color: #dc2626;">false</strong>).</span>
+                            </li>
+                            <li>
+                                <span class="check-icon">✓</span>
+                                <span>They are used in conditions (<code>if</code>, <code>else</code>, <code>while</code>, <code>for</code>).</span>
+                            </li>
+                            <li>
+                                <span class="check-icon">✓</span>
+                                <span>The result of a comparison is <strong>always boolean</strong>, not a number.</span>
+                            </li>
+                            <li>
+                                <span class="check-icon">✓</span>
+                                <span>You can compare numbers, characters and strings (using <code>equals()</code> for strings).</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-card">
+                        <div class="tip-header">
+                            <span style="font-size: 1.2rem;">✔</span> Quick Tip
+                        </div>
+                        <div class="tip-content">
+                            Use relational operators inside <code>if</code> conditions to control the flow of your program.
+                        </div>
+                        <div class="flow-banner">
+                            Compare &rarr; Get True or False &rarr; Make Decisions!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Interactive Console Toggle
+        const runBtn = document.getElementById('runBtn');
+        const outputPanel = document.getElementById('outputPanel');
+
+        runBtn.addEventListener('click', () => {
+            if (outputPanel.classList.contains('active')) {
+                outputPanel.classList.remove('active');
+                runBtn.textContent = '▶ Run Code';
+            } else {
+                outputPanel.classList.add('active');
+                runBtn.textContent = '◼ Stop';
+            }
+        });
+
+        // Row hover interaction
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(5px)';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+</body>
+</html>
