@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Logical Operators in Java</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'AmpFix';font-weight:100 900;src:local('Arial'),local('Helvetica Neue'),local('Helvetica'),local('Liberation Sans'),local('Roboto');unicode-range:U+0026}
+:root{--code-bg:#0f172a;--text-main:#1e293b;--border-color:#e2e8f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',sans-serif;background:#0d1527;color:var(--text-main);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:2rem;overflow-x:hidden}
+.bg-glow{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(0,188,212,.15) 0%,rgba(30,27,75,0) 70%);z-index:0;pointer-events:none;animation:pulse 8s infinite alternate}
+@keyframes pulse{0%{transform:translate(-50%,-50%) scale(.8);opacity:.5}100%{transform:translate(-50%,-50%) scale(1.2);opacity:.8}}
+.container{position:relative;z-index:1;max-width:1000px;width:100%;background:#fff;border-radius:24px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5);overflow:hidden;animation:fadeIn .8s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.header{background:linear-gradient(135deg,#00d2ff 0%,#0083b0 100%);color:#fff;padding:2.5rem 2rem 2rem;text-align:center;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 60%);animation:rotate 20s linear infinite}
+@keyframes rotate{to{transform:rotate(360deg)}}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;position:relative;z-index:2;gap:10px;flex-wrap:wrap}
+.logo-badge{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.2);backdrop-filter:blur(5px);padding:6px 16px;border-radius:20px;font-weight:700;font-size:1.1rem}
+.logo-badge svg{fill:#f89820;width:24px;height:24px}
+.header-right{display:flex;align-items:center;gap:10px}
+.home-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.25);backdrop-filter:blur(5px);color:#fff;border:none;font-weight:700;font-size:.9rem;padding:8px 16px;border-radius:20px;cursor:pointer;transition:all .2s ease;font-family:'Poppins',sans-serif}
+.home-btn:hover{background:rgba(255,255,255,.4);transform:translateY(-1px)}
+.tagline{font-size:.95rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;background:rgba(255,255,255,.2);padding:6px 16px;border-radius:20px;backdrop-filter:blur(5px)}
+.header h1{font-size:2.8rem;font-weight:800;letter-spacing:-.5px;margin-bottom:.5rem;position:relative;z-index:2;text-shadow:0 2px 4px rgba(0,0,0,.1)}
+.header p{font-size:1.1rem;font-weight:500;opacity:.95;position:relative;z-index:2;max-width:700px;margin:0 auto}
+.header p span{background:rgba(255,255,255,.25);padding:2px 8px;border-radius:6px;font-weight:700}
+.content{padding:2rem}
+.table-wrapper{overflow-x:auto;border-radius:16px;box-shadow:0 4px 6px -1px rgba(0,0,0,.05);border:1px solid var(--border-color);margin-bottom:2rem;background:#fff}
+table{width:100%;border-collapse:collapse;text-align:left}
+th{background:#e0f2fe;color:#0369a1;font-weight:700;font-size:1.05rem;padding:1.1rem 1rem;border-bottom:2px solid #bae6fd}
+td{padding:1rem;border-bottom:1px solid var(--border-color);font-size:.95rem}
+tr{transition:transform .2s ease,background-color .2s ease}
+tr:hover{background-color:#f8fafc}
+tr:last-child td{border-bottom:none}
+.op-badge{display:inline-block;font-family:'Fira Code',monospace;font-weight:700;font-size:1.2rem;padding:6px 14px;border-radius:8px;text-align:center;min-width:60px;box-shadow:0 2px 4px rgba(0,0,0,.05);font-feature-settings:"liga" 0,"calt" 0}
+.op-and{background:#e0f7fa;color:#00838f}
+.op-or{background:#fff8e1;color:#f57f17}
+.op-not{background:#f3e5f5;color:#7b1fa2}
+.name-cell{font-weight:600;color:#334155}
+.desc-cell{color:#475569;line-height:1.5}
+.example-box{font-family:'Fira Code',monospace;background:#f1f5f9;padding:6px 12px;border-radius:8px;display:inline-block;font-size:.88rem;color:#0f172a;font-weight:500;font-feature-settings:"liga" 0,"calt" 0}
+.res-badge{display:inline-block;background:#dcfce7;color:#15803d;font-weight:700;padding:6px 16px;border-radius:8px;font-family:'Fira Code',monospace}
+.bottom-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:1.5rem}
+@media(max-width:850px){.bottom-grid{grid-template-columns:1fr}.header h1{font-size:2rem}}
+.code-card{background:var(--code-bg);border-radius:16px;overflow:hidden;box-shadow:0 10px 15px -3px rgba(0,0,0,.3);display:flex;flex-direction:column}
+.code-header{background:#1e293b;padding:.8rem 1.2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #334155;gap:8px}
+.mac-dots{display:flex;gap:8px}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot-red{background:#ef4444}.dot-yellow{background:#f59e0b}.dot-green{background:#10b981}
+.code-title{color:#94a3b8;font-size:.9rem;font-weight:600}
+.interactive-btn{background:#0284c7;color:#fff;border:none;padding:4px 12px;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s ease;font-family:'Poppins',sans-serif}
+.interactive-btn:hover{background:#0369a1;transform:translateY(-1px)}
+.code-body{padding:1.2rem;font-family:'Fira Code',monospace;font-size:.82rem;line-height:1.6;color:#e2e8f0;overflow-x:auto;flex-grow:1;white-space:pre;font-feature-settings:"liga" 0,"calt" 0}
+.kw{color:#f472b6;font-weight:600}.cls{color:#38bdf8;font-weight:600}.type{color:#a78bfa}.num{color:#fbbf24}.str{color:#4ade80}.cmnt{color:#64748b;font-style:italic}.op{color:#f43f5e;font-weight:bold}
+.right-col{display:flex;flex-direction:column;gap:1.5rem}
+.info-card{background:#f0f9ff;border:1px solid #bae6fd;border-radius:16px;padding:1.5rem}
+.card-title{display:flex;align-items:center;gap:10px;font-size:1.2rem;font-weight:700;color:#0369a1;margin-bottom:1rem}
+.card-title-icon{width:28px;height:28px;background:#0284c7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.points-list{list-style:none;display:flex;flex-direction:column;gap:.8rem}
+.points-list li{display:flex;align-items:flex-start;gap:10px;font-size:.92rem;color:#334155;line-height:1.4}
+.check-icon{color:#16a34a;font-weight:bold;background:#dcfce7;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;margin-top:2px}
+.tip-card{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:16px;padding:1.2rem 1.5rem}
+.tip-header{display:flex;align-items:center;gap:8px;color:#15803d;font-weight:700;font-size:1.05rem;margin-bottom:.5rem}
+.tip-content{font-size:.88rem;color:#166534;line-height:1.4;margin-bottom:.8rem}
+.flow-banner{background:rgba(22,163,74,.1);border:1px dashed #4ade80;padding:8px 12px;border-radius:8px;font-size:.82rem;font-weight:700;color:#15803d;text-align:center}
+.output-panel{background:#050b14;padding:12px 1.2rem;font-family:'Fira Code',monospace;font-size:.8rem;color:#4ade80;display:none;border-top:1px solid #1e293b}
+.output-panel.active{display:block;animation:expand .3s ease-out}
+@keyframes expand{from{opacity:0}to{opacity:1}}
+.op-badge,.example-box,.code-body,.code-body *,.res-badge,.tt td,.tt th{font-family:'AmpFix','Fira Code',Consolas,'Courier New',monospace!important;font-variant-ligatures:none!important;font-feature-settings:"liga" 0,"calt" 0!important;-webkit-font-feature-settings:"liga" 0,"calt" 0!important;text-rendering:optimizeSpeed}
+.op-badge{letter-spacing:.04em}
+.code-body{margin:0;white-space:pre;tab-size:2}
+.tt-tabs{display:flex;gap:6px;margin-bottom:.8rem}
+.tt-tab{flex:1;border:1px solid #bae6fd;background:#fff;color:#0369a1;font-weight:700;font-family:'AmpFix','Fira Code',monospace;padding:6px;border-radius:8px;cursor:pointer;font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+.tt-tab.active{background:#0284c7;color:#fff;border-color:#0284c7}
+.tt{width:100%;border:1px solid #bae6fd;border-radius:12px;overflow:hidden;background:#fff;text-align:center}
+.tt th{background:#e0f2fe;color:#0369a1;font-size:.9rem;padding:.6rem;border-bottom:1px solid #bae6fd;text-align:center;white-space:nowrap}
+.tt td{padding:.55rem;font-size:.85rem;border-bottom:1px solid var(--border-color)}
+.tt .t{color:#15803d;font-weight:600}.tt .f{color:#dc2626;font-weight:600}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="container">
+  <header class="header">
+    <div class="header-top">
+      <div class="logo-badge">
+        <svg viewBox="0 0 24 24"><path d="M0 13.571c0 3.868 4.14 5.929 8.28 5.929 7.02 0 10.35-4.52 9.07-8.31-1.28-3.79-6.41-3.69-6.41-3.69s3.84-1.63 2.1-4.35c-1.74-2.72-5.46.22-5.46.22s1.46-2.5-1.07-3.37c-2.53-.87-4.4 2.1-4.4 2.1s-.4-1.3-2.11-.87c-1.71.43-.87 2.39-.87 2.39S-1 8.871 0 13.571z"/></svg>
+        Java
+      </div>
+      <div class="header-right">
+        <button class="home-btn" id="homeBtn" title="Go to home page">🏠 Home</button>
+        <div class="tagline">Combine Conditions • Decide</div>
+      </div>
+    </div>
+    <h1>Logical Operators in Java</h1>
+    <p>Logical operators combine or reverse boolean conditions and return a boolean result (<span>true</span> or <span>false</span>).</p>
+  </header>
+
+  <main class="content">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:12%">Operator</th>
+            <th style="width:16%">Name</th>
+            <th style="width:32%">Description</th>
+            <th style="width:30%">Example</th>
+            <th style="width:10%">Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="op-badge op-and">&amp;&amp;</span></td>
+            <td class="name-cell">Logical AND</td>
+            <td class="desc-cell">Returns true only if both conditions are true.</td>
+            <td><span class="example-box">(true &amp;&amp; true)</span></td>
+            <td><span class="res-badge">true</span></td>
+          </tr>
+          <tr>
+            <td><span class="op-badge op-or">||</span></td>
+            <td class="name-cell">Logical OR</td>
+            <td class="desc-cell">Returns true if at least one condition is true.</td>
+            <td><span class="example-box">(true || false)</span></td>
+            <td><span class="res-badge">true</span></td>
+          </tr>
+          <tr>
+            <td><span class="op-badge op-not">!</span></td>
+            <td class="name-cell">Logical NOT</td>
+            <td class="desc-cell">Reverses the result: true becomes false and false becomes true.</td>
+            <td><span class="example-box">!true</span></td>
+            <td><span class="res-badge">false</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="code-card">
+        <div class="code-header">
+          <div class="mac-dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+          <div class="code-title">Example in Java &lt;/&gt;</div>
+          <button class="interactive-btn" id="runBtn">▶ Run Code</button>
+        </div>
+<pre class="code-body"><span class="kw">package</span> com.example.practice;
+
+<span class="kw">public class</span> <span class="cls">LogicalOperators</span> {
+  <span class="kw">public static void</span> main(<span class="cls">String</span>[] args) {
+
+    <span class="type">int</span> a = <span class="num">10</span>;
+    <span class="type">int</span> b = <span class="num">5</span>;
+    <span class="type">int</span> c = <span class="num">20</span>;
+
+    <span class="cls">System</span>.out.println(<span class="str">"AND : "</span> + (a &gt; b <span class="op">&amp;&amp;</span> c &gt; a)); <span class="cmnt">// true</span>
+    <span class="cls">System</span>.out.println(<span class="str">"AND : "</span> + (a &gt; b <span class="op">&amp;&amp;</span> a &gt; c)); <span class="cmnt">// false</span>
+    <span class="cls">System</span>.out.println(<span class="str">"OR  : "</span> + (a &gt; c <span class="op">||</span> b &lt; c)); <span class="cmnt">// true</span>
+    <span class="cls">System</span>.out.println(<span class="str">"OR  : "</span> + (a &lt; b <span class="op">||</span> c &lt; b)); <span class="cmnt">// false</span>
+    <span class="cls">System</span>.out.println(<span class="str">"NOT : "</span> + <span class="op">!</span>(a &gt; b));        <span class="cmnt">// false</span>
+    <span class="cls">System</span>.out.println(<span class="str">"NOT : "</span> + <span class="op">!</span>(a &lt; b));        <span class="cmnt">// true</span>
+  }
+}</pre>
+        <div class="output-panel" id="outputPanel">
+          <div><strong>Execution Console Output:</strong></div>
+          <div style="color:#94a3b8;margin-top:5px;line-height:1.6">AND : true<br>AND : false<br>OR  : true<br>OR  : false<br>NOT : false<br>NOT : true</div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="info-card">
+          <div class="card-title"><div class="card-title-icon">💡</div><span id="ttTitle">Truth Table: AND</span></div>
+          <div class="tt-tabs">
+            <button class="tt-tab active" data-op="and">&amp;&amp;</button>
+            <button class="tt-tab" data-op="or">||</button>
+            <button class="tt-tab" data-op="not">!</button>
+          </div>
+          <table class="tt"><thead id="ttHead"></thead><tbody id="ttBody"></tbody></table>
+        </div>
+        <div class="info-card">
+          <div class="card-title"><div class="card-title-icon">💡</div>Key Points</div>
+          <ul class="points-list">
+            <li><span class="check-icon">✓</span><span>Logical operators work on <strong>boolean</strong> values and return <strong style="color:#16a34a">true</strong> or <strong style="color:#dc2626">false</strong>.</span></li>
+            <li><span class="check-icon">✓</span><span><code>&amp;&amp;</code> and <code>||</code> use <strong>short-circuiting</strong>: the right side is skipped when the left side already decides the result.</span></li>
+            <li><span class="check-icon">✓</span><span>Combine several relational checks, like <code>age &gt;= 18 &amp;&amp; hasId</code>.</span></li>
+            <li><span class="check-icon">✓</span><span>Use parentheses to make the order clear. <code>!</code> runs first, then <code>&amp;&amp;</code>, then <code>||</code>.</span></li>
+          </ul>
+        </div>
+        <div class="tip-card">
+          <div class="tip-header"><span style="font-size:1.2rem">✔</span> Quick Tip</div>
+          <div class="tip-content">Use <code>&amp;&amp;</code> when all conditions must pass, <code>||</code> when any one is enough, and <code>!</code> to flip a condition.</div>
+          <div class="flow-banner">Combine &rarr; Get True or False &rarr; Make Decisions!</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+document.getElementById('homeBtn').addEventListener('click', () => { window.location.href = 'type.html'; });
+const runBtn = document.getElementById('runBtn');
+const outputPanel = document.getElementById('outputPanel');
+runBtn.addEventListener('click', () => {
+  const on = outputPanel.classList.toggle('active');
+  runBtn.textContent = on ? '◼ Stop' : '▶ Run Code';
+});
+const T={and:{n:'AND',h:['A','B','A &amp;&amp; B'],r:[[1,1,1],[1,0,0],[0,1,0],[0,0,0]]},
+or:{n:'OR',h:['A','B','A || B'],r:[[1,1,1],[1,0,1],[0,1,1],[0,0,0]]},
+not:{n:'NOT',h:['A','!A'],r:[[1,0],[0,1]]}};
+const cell=v=>'<td class="'+(v?'t':'f')+'">'+(v?'true':'false')+'</td>';
+function showTT(k){const d=T[k];
+document.getElementById('ttTitle').textContent='Truth Table: '+d.n;
+document.getElementById('ttHead').innerHTML='<tr>'+d.h.map(x=>'<th>'+x+'</th>').join('')+'</tr>';
+document.getElementById('ttBody').innerHTML=d.r.map(r=>'<tr>'+r.map(cell).join('')+'</tr>').join('');
+document.querySelectorAll('.tt-tab').forEach(b=>b.classList.toggle('active',b.dataset.op===k));}
+document.querySelectorAll('.tt-tab').forEach(b=>b.addEventListener('click',()=>showTT(b.dataset.op)));
+showTT('and');
+</script>
+</body>
+</html>
