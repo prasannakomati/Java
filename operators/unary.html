@@ -1,0 +1,836 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Unary Operators in Java</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --code-bg: #0f172a;
+    --text-main: #1e293b;
+    --border-color: #e2e8f0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #0d1527;
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    overflow-x: hidden;
+}
+
+.bg-glow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0,188,212,.15), transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+    animation: pulse 8s infinite alternate;
+}
+
+@keyframes pulse {
+    from {
+        transform: translate(-50%, -50%) scale(.8);
+        opacity: .5;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: .8;
+    }
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    width: 100%;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,.5);
+    overflow: hidden;
+    animation: fadeIn .8s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header {
+    background: linear-gradient(135deg, #00d2ff, #0083b0);
+    color: white;
+    padding: 2.2rem 2rem;
+    text-align: center;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.logo-badge,
+.tagline,
+.home-btn {
+    background: rgba(255,255,255,.2);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+.logo-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.home-btn {
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.tagline {
+    font-size: .8rem;
+}
+
+.header h1 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.header p {
+    max-width: 750px;
+    margin: auto;
+    font-size: 1rem;
+}
+
+.content {
+    padding: 2rem;
+}
+
+.section-title {
+    color: #0369a1;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.intro {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.intro p {
+    line-height: 1.8;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 14px;
+    white-space: nowrap;
+}
+
+td {
+    padding: 14px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: .9rem;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background: #f8fafc;
+}
+
+.op-badge {
+    display: inline-block;
+    font-family: 'Fira Code', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.op-inc {
+    background: #e0f7fa;
+    color: #00838f;
+}
+
+.op-dec {
+    background: #fff8e1;
+    color: #f57f17;
+}
+
+.op-sign {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.op-not {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.op-bit {
+    background: #fce7f3;
+    color: #be185d;
+}
+
+.name-cell {
+    font-weight: 600;
+    color: #334155;
+}
+
+.desc-cell {
+    color: #475569;
+    line-height: 1.6;
+}
+
+.example-box {
+    display: inline-block;
+    background: #f1f5f9;
+    padding: 5px 10px;
+    border-radius: 7px;
+    font-family: 'Fira Code', monospace;
+    white-space: nowrap;
+}
+
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 1.5rem;
+    margin-top: 25px;
+}
+
+.code-card {
+    background: var(--code-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,.25);
+    min-width: 0;
+}
+
+.code-header {
+    background: #1e293b;
+    padding: 13px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.mac-dots {
+    display: flex;
+    gap: 7px;
+}
+
+.dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+}
+
+.dot-red { background: #ef4444; }
+.dot-yellow { background: #f59e0b; }
+.dot-green { background: #10b981; }
+
+.code-title {
+    color: #94a3b8;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+.interactive-btn {
+    background: #0284c7;
+    color: white;
+    border: none;
+    padding: 7px 13px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.interactive-btn:hover {
+    background: #0369a1;
+}
+
+.code-body {
+    padding: 20px;
+    font-family: 'Fira Code', monospace;
+    font-size: .82rem;
+    line-height: 1.9;
+    color: #e2e8f0;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+.kw { color: #f472b6; }
+.cls { color: #38bdf8; }
+.type { color: #a78bfa; }
+.num { color: #fbbf24; }
+.str { color: #4ade80; }
+.cmnt { color: #64748b; font-style: italic; }
+.op { color: #fb7185; font-weight: bold; }
+
+.output-panel {
+    display: none;
+    background: #050b14;
+    padding: 16px 20px;
+    color: #4ade80;
+    border-top: 1px solid #334155;
+    font-family: 'Fira Code', monospace;
+    font-size: .82rem;
+    white-space: pre-wrap;
+    line-height: 1.8;
+}
+
+.output-panel.active {
+    display: block;
+}
+
+.right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.info-card {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.card-title {
+    color: #0369a1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.points-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.points-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: .9rem;
+    line-height: 1.6;
+}
+
+.check-icon {
+    color: #16a34a;
+    font-weight: bold;
+}
+
+.tip-card {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.tip-header {
+    color: #15803d;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.tip-content {
+    font-size: .9rem;
+    color: #166534;
+    line-height: 1.7;
+}
+
+.flow-banner {
+    background: rgba(22,163,74,.1);
+    border: 1px dashed #4ade80;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 12px;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #15803d;
+    text-align: center;
+}
+
+.quiz-card {
+    margin-top: 25px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 22px;
+}
+
+.quiz-card h2 {
+    color: #0369a1;
+    margin-bottom: 12px;
+}
+
+.quiz-card pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 16px;
+    border-radius: 10px;
+    margin: 12px 0;
+    overflow-x: auto;
+}
+
+.quiz-card select {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.quiz-card button {
+    background: #0284c7;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+    font: inherit;
+}
+
+#quizResult {
+    margin-top: 12px;
+    font-weight: 600;
+}
+
+footer {
+    background: #101c3d;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: .9rem;
+}
+
+@media (max-width: 850px) {
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 520px) {
+    body {
+        padding: 10px;
+    }
+
+    .header {
+        padding: 25px 15px;
+    }
+
+    .header h1 {
+        font-size: 1.7rem;
+    }
+
+    .content {
+        padding: 15px;
+    }
+
+    .tagline {
+        display: none;
+    }
+
+    .code-body {
+        font-size: .75rem;
+        padding: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="container">
+
+    <header class="header">
+        <div class="header-top">
+            <div class="logo-badge">☕ Java</div>
+
+            <div class="header-right">
+                <button class="home-btn" id="homeBtn">🏠 Home</button>
+                <div class="tagline">One Operand • One Operation</div>
+            </div>
+        </div>
+
+        <h1>Unary Operators in Java</h1>
+
+        <p>
+            Unary operators work on one operand. Learn how Java
+            changes values, reverses conditions, and manipulates bits.
+        </p>
+    </header>
+
+    <main class="content">
+
+        <section class="intro">
+            <h2 class="section-title">📌 What are Unary Operators?</h2>
+
+            <p>
+                A unary operator is an operator that works on only one
+                operand (a variable or value).
+            </p>
+
+            <p>
+                Example: <strong>a++</strong> uses one variable, a,
+                and increases its value by one.
+            </p>
+        </section>
+
+        <h2 class="section-title">⭐ Types of Unary Operators</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operator</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td><span class="op-badge op-inc">++</span></td>
+                        <td class="name-cell">Increment</td>
+                        <td class="desc-cell">
+                            Increases a variable by 1.
+                        </td>
+                        <td><span class="example-box">a++</span></td>
+                        <td>10 → 11</td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="op-badge op-dec">--</span></td>
+                        <td class="name-cell">Decrement</td>
+                        <td class="desc-cell">
+                            Decreases a variable by 1.
+                        </td>
+                        <td><span class="example-box">a--</span></td>
+                        <td>10 → 9</td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="op-badge op-sign">+</span></td>
+                        <td class="name-cell">Unary Plus</td>
+                        <td class="desc-cell">
+                            Indicates a positive numeric value.
+                        </td>
+                        <td><span class="example-box">+a</span></td>
+                        <td>10</td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="op-badge op-sign">-</span></td>
+                        <td class="name-cell">Unary Minus</td>
+                        <td class="desc-cell">
+                            Reverses the sign of a numeric value.
+                        </td>
+                        <td><span class="example-box">-a</span></td>
+                        <td>-10</td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="op-badge op-not">!</span></td>
+                        <td class="name-cell">Logical NOT</td>
+                        <td class="desc-cell">
+                            Reverses a boolean value.
+                        </td>
+                        <td><span class="example-box">!true</span></td>
+                        <td>false</td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="op-badge op-bit">~</span></td>
+                        <td class="name-cell">Bitwise Complement</td>
+                        <td class="desc-cell">
+                            Reverses all bits of an integer.
+                        </td>
+                        <td><span class="example-box">~10</span></td>
+                        <td>-11</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bottom-grid">
+
+            <div class="code-card">
+                <div class="code-header">
+                    <div class="mac-dots">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                    </div>
+
+                    <div class="code-title">Java Example</div>
+
+                    <button class="interactive-btn" id="runBtn">
+                        ▶ Run Code
+                    </button>
+                </div>
+
+<pre class="code-body"><span class="kw">public class</span> <span class="cls">UnaryOperators</span> {
+    <span class="kw">public static void</span> main(<span class="cls">String</span>[] args) {
+
+        <span class="type">int</span> a = <span class="num">10</span>;
+
+        <span class="cls">System</span>.out.println(<span class="str">"Post-increment: "</span> + a++);
+        <span class="cls">System</span>.out.println(<span class="str">"Current value: "</span> + a);
+
+        <span class="cls">System</span>.out.println(<span class="str">"Pre-increment: "</span> + ++a);
+
+        <span class="type">int</span> b = <span class="num">10</span>;
+        <span class="cls">System</span>.out.println(<span class="str">"Post-decrement: "</span> + b--);
+        <span class="cls">System</span>.out.println(<span class="str">"Pre-decrement: "</span> + --b);
+
+        <span class="cls">System</span>.out.println(<span class="str">"Unary plus: "</span> + +a);
+        <span class="cls">System</span>.out.println(<span class="str">"Unary minus: "</span> + -a);
+
+        <span class="type">boolean</span> flag = <span class="kw">true</span>;
+        <span class="cls">System</span>.out.println(<span class="str">"Logical NOT: "</span> + !flag);
+
+        <span class="cls">System</span>.out.println(<span class="str">"Bitwise complement: "</span> + ~10);
+    }
+}</pre>
+
+                <div class="output-panel" id="outputPanel">
+                    <strong>Console Output:</strong>
+                    <div id="consoleOutput"></div>
+                    <p style="color:#94a3b8; margin-top:10px;">
+                        Demonstration of the Java program's expected output.
+                    </p>
+                </div>
+            </div>
+
+            <div class="right-col">
+
+                <section class="info-card">
+                    <div class="card-title">💡 Key Points</div>
+
+                    <ul class="points-list">
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>
+                                <strong>a++</strong> returns the old value
+                                in the expression, then increments a.
+                            </span>
+                        </li>
+
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>
+                                <strong>++a</strong> increments a first,
+                                then returns the updated value.
+                            </span>
+                        </li>
+
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>
+                                <strong>a--</strong> and <strong>--a</strong>
+                                follow the same rules but decrease by one.
+                            </span>
+                        </li>
+
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>
+                                <strong>!</strong> works with boolean values.
+                            </span>
+                        </li>
+
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>
+                                <strong>~</strong> flips every bit of an
+                                integer.
+                            </span>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="tip-card">
+                    <div class="tip-header">✔ Quick Tip</div>
+
+                    <div class="tip-content">
+                        Post means use the current value first.
+                        Pre means update the value first.
+                    </div>
+
+                    <div class="flow-banner">
+                        One Operand → Unary Operator → Result
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <section class="quiz-card">
+            <h2>🧪 Practice Quiz</h2>
+
+            <p>What is the output of this Java program?</p>
+
+<pre>int a = 5;
+System.out.println(a++);
+System.out.println(++a);
+System.out.println(a);</pre>
+
+            <select id="answer">
+                <option value="">Choose your answer</option>
+                <option value="A">A) 5, 6, 6</option>
+                <option value="B">B) 5, 7, 7</option>
+                <option value="C">C) 6, 7, 7</option>
+                <option value="D">D) 5, 5, 7</option>
+            </select>
+
+            <button id="checkBtn">Check Answer</button>
+
+            <p id="quizResult" aria-live="polite"></p>
+        </section>
+
+    </main>
+
+    <footer>
+        Learn Java Step by Step | Code with Komati
+    </footer>
+
+</div>
+
+<script>
+const runBtn = document.getElementById("runBtn");
+const outputPanel = document.getElementById("outputPanel");
+const consoleOutput = document.getElementById("consoleOutput");
+
+runBtn.addEventListener("click", function () {
+    const isVisible = outputPanel.classList.toggle("active");
+
+    if (isVisible) {
+        let a = 10;
+        let b = 10;
+        let flag = true;
+
+        const lines = [
+            "Post-increment: " + a++,
+            "Current value: " + a,
+            "Pre-increment: " + ++a,
+            "Post-decrement: " + b--,
+            "Pre-decrement: " + --b,
+            "Unary plus: " + (+a),
+            "Unary minus: " + (-a),
+            "Logical NOT: " + (!flag),
+            "Bitwise complement: " + (~10)
+        ];
+
+        consoleOutput.textContent = lines.join("\n");
+        runBtn.textContent = "◼ Hide Output";
+    } else {
+        runBtn.textContent = "▶ Run Code";
+    }
+});
+
+document.getElementById("homeBtn").addEventListener("click", function () {
+    window.location.href = "type.html";
+});
+
+document.getElementById("checkBtn").addEventListener("click", function () {
+    const answer = document.getElementById("answer").value;
+    const result = document.getElementById("quizResult");
+
+    if (answer === "B") {
+        result.textContent = "Correct! The output is 5, 7, 7.";
+        result.style.color = "#15803d";
+    } else if (answer === "") {
+        result.textContent = "Please select an answer.";
+        result.style.color = "#b45309";
+    } else {
+        result.textContent =
+            "Incorrect. Try again and trace the value of a step by step.";
+        result.style.color = "#dc2626";
+    }
+});
+</script>
+
+</body>
+</html>
